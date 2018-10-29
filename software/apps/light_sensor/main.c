@@ -16,6 +16,7 @@
 #include "buckler.h"
 
 #include "../../libraries/light_sensor/max44009.h"
+//#include "../../libraries/light_sensor/max44009.c"
 
 //Variables to maintain thresholds
 bool update_thresh = false;
