@@ -91,7 +91,7 @@ void max44009_set_interrupt_callback(max44009_interrupt_callback* callback) {
     nrf_drv_gpiote_init();
   }
   nrf_drv_gpiote_in_config_t int_gpio_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(0);
-  int error = nrf_drv_gpiote_in_init(MAX44009_INT, &int_gpio_config, interrupt_handler);
+  int error = nrf_drv_gpiote_in_init(BUCKLER_LIGHT_INTERRUPT, &int_gpio_config, interrupt_handler);
   APP_ERROR_CHECK(error);
 }
 
@@ -102,7 +102,7 @@ void max44009_enable_interrupt(void) {
   error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, int_time_write_transfer, sizeof(int_time_write_transfer)/sizeof(int_time_write_transfer[0]), NULL);
   APP_ERROR_CHECK(error);
 
-  nrf_drv_gpiote_in_event_enable(MAX44009_INT, 1);
+  nrf_drv_gpiote_in_event_enable(BUCKLER_LIGHT_INTERRUPT, 1);
 }
 
 void max44009_disable_interrupt(void) {
@@ -110,7 +110,7 @@ void max44009_disable_interrupt(void) {
   int error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, int_enable_transfer, sizeof(int_enable_transfer)/sizeof(int_enable_transfer[0]), NULL);
   APP_ERROR_CHECK(error);
 
-  nrf_drv_gpiote_in_event_enable(MAX44009_INT, 0);
+  nrf_drv_gpiote_in_event_enable(BUCKLER_LIGHT_INTERRUPT, 0);
 }
 
 void max44009_config(max44009_config_t config) {

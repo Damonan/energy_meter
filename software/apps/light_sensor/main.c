@@ -13,23 +13,33 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "buckler.h"
 
-#include "permamote.h"
-#include "max44009.h"
+#include "../../libraries/light_sensor/max44009.h"
+
+//Variables to maintain thresholds
+bool update_thresh = false;
+float upper;
+float lower;
 
 //Macro for defining a TWI instance
 //Param 1: instance name; Param 2: queue size; Param 3: index
-NRF_TWI_MNGR_DEF(twi_mngr_instance, /*queue_size*/, /*index*/);
+NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
 //This function will be called on the lux data after a transaction is complete
 //Not sure if we ever want to read... just want to register an interrupt
-static void sensor_read_callback(){
-	//TODO
+static void sensor_read_callback(float lux){
+	//For now this is used once on startup to peek at the ambient light values, and set thresholds based on those values
+	upper = lux + lux*0.10;
+	lower = lux - lux*0.10;
+
+	update_thresh = true;
 }
 
 //This function will be called when the max44009 is interrupted
 static void interrupt_callback(){
-	//TODO
+	max44009_schedule_read_lux();
+	printf("Interrupt happened");
 }
 
 //This will initialize our twi struct
@@ -41,8 +51,8 @@ void twi_init(void){
 
 
 	const nrf_drv_twi_config_t twi_config = {
-		.scl		= I2C_SCL,
-		.sda		= I2C_SDA,
+		.scl		= BUCKLER_SENSORS_SCL,
+		.sda		= BUCKLER_SENSORS_SDA,
 		.frequency 	= NRF_TWI_FREQ_400K,
 	};
 	
@@ -59,25 +69,12 @@ int main(void){
 
 	//Call our init function to get our twi instance
 	twi_init();
-
-	//All of the macros below are defined in max44009.h
-	//nrf_gpio_cfg_output: Sets GPIO pin as an output
-	//nrf_gpio_pin_clear: Clears the pin
-	//nrf_gpio_pin_set: Sets the pin (I'd imagine this is an initialization?)
-	nrf_gpio_cfg_output(MAX44009_EN);
-  	nrf_gpio_cfg_output(ISL29125_EN);
-  	nrf_gpio_cfg_output(MS5637_EN);
-  	nrf_gpio_cfg_output(SI7021_EN);
-  	nrf_gpio_pin_clear(MAX44009_EN);
-  	nrf_gpio_pin_set(ISL29125_EN);
-  	nrf_gpio_pin_set(MS5637_EN);
-  	nrf_gpio_pin_set(SI7021_EN);
 	
 	//This object is documented in max44009.h. Configures our light sensor
 	const max44009_config_t config = {
 		.continuous = 0,
 		.manual = 0,
-		.cdr = ,
+		.cdr = 0,
 		.int_time = 3,
 	};
 
@@ -93,10 +90,14 @@ int main(void){
 	max44009_set_interrupt_callback(interrupt_callback);
 	max44009_enable_interrupt();
 
+	//Set threshold for high or low
+	max44009_set_upper_threshold(upper);
+	max44009_set_lower_threshold(lower);
+
 	while(1){
 		//All we should do is wait for an interrupt, handle it, then wait again
 		//We probably need a couple more pieces here, not sure yet though
-		__WFI();
+		__WFE();
 	
 	}
 }
