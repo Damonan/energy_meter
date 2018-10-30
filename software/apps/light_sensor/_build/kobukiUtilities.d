@@ -1,26 +1,39 @@
 _build/kobukiUtilities.o: \
- /mnt/c/Users/damon/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiUtilities.c \
- /mnt/c/Users/damon/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiUtilities.h \
- /usr/lib/gcc/arm-none-eabi/6.3.1/include/stdint.h \
- /usr/include/newlib/stdint.h \
- /usr/include/newlib/machine/_default_types.h \
- /usr/include/newlib/sys/features.h /usr/include/newlib/_newlib_version.h \
- /usr/include/newlib/sys/_intsup.h /usr/include/newlib/sys/_stdint.h \
- /mnt/c/Users/damon/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiSensorTypes.h \
- /usr/lib/gcc/arm-none-eabi/6.3.1/include/stdbool.h \
- /usr/include/newlib/stdio.h /usr/include/newlib/_ansi.h \
- /usr/include/newlib/newlib.h /usr/include/newlib/sys/config.h \
- /usr/include/newlib/machine/ieeefp.h /usr/include/newlib/sys/cdefs.h \
- /usr/lib/gcc/arm-none-eabi/6.3.1/include/stddef.h \
- /usr/lib/gcc/arm-none-eabi/6.3.1/include/stdarg.h \
- /usr/include/newlib/sys/reent.h /usr/include/newlib/_ansi.h \
- /usr/include/newlib/sys/_types.h /usr/include/newlib/machine/_types.h \
- /usr/include/newlib/sys/lock.h /usr/include/newlib/sys/types.h \
- /usr/include/newlib/machine/endian.h \
- /usr/include/newlib/machine/_endian.h /usr/include/newlib/sys/select.h \
- /usr/include/newlib/sys/_sigset.h /usr/include/newlib/sys/_timeval.h \
- /usr/include/newlib/sys/timespec.h /usr/include/newlib/sys/_timespec.h \
- /usr/include/newlib/machine/types.h /usr/include/newlib/sys/stdio.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiUtilities.c \
+ /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiUtilities.h \
+ /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h \
+ /usr/arm-none-eabi/include/stdint.h \
+ /usr/arm-none-eabi/include/machine/_default_types.h \
+ /usr/arm-none-eabi/include/sys/features.h \
+ /usr/arm-none-eabi/include/_newlib_version.h \
+ /usr/arm-none-eabi/include/sys/_intsup.h \
+ /usr/arm-none-eabi/include/sys/_stdint.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiSensorTypes.h \
+ /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
+ /usr/arm-none-eabi/include/stdio.h /usr/arm-none-eabi/include/_ansi.h \
+ /usr/arm-none-eabi/include/newlib.h \
+ /usr/arm-none-eabi/include/sys/config.h \
+ /usr/arm-none-eabi/include/machine/ieeefp.h \
+ /usr/arm-none-eabi/include/sys/cdefs.h \
+ /usr/lib/gcc/arm-none-eabi/7.3.1/include/stddef.h \
+ /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdarg.h \
+ /usr/arm-none-eabi/include/sys/reent.h \
+ /usr/arm-none-eabi/include/_ansi.h \
+ /usr/arm-none-eabi/include/sys/_types.h \
+ /usr/arm-none-eabi/include/machine/_types.h \
+ /usr/arm-none-eabi/include/sys/lock.h \
+ /usr/arm-none-eabi/include/sys/types.h \
+ /usr/arm-none-eabi/include/machine/endian.h \
+ /usr/arm-none-eabi/include/machine/_endian.h \
+ /usr/arm-none-eabi/include/sys/select.h \
+ /usr/arm-none-eabi/include/sys/_sigset.h \
+ /usr/arm-none-eabi/include/sys/_timeval.h \
+ /usr/arm-none-eabi/include/sys/timespec.h \
+ /usr/arm-none-eabi/include/sys/_timespec.h \
+ /usr/arm-none-eabi/include/sys/_pthreadtypes.h \
+ /usr/arm-none-eabi/include/sys/sched.h \
+ /usr/arm-none-eabi/include/machine/types.h \
+ /usr/arm-none-eabi/include/sys/stdio.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/uart/app_uart.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_util_platform.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
@@ -46,7 +59,7 @@ _build/kobukiUtilities.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/nrfx.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/nrfx_config.h \
  ../../../buckler/software/nrf5x-base//make/config/nrf52840/config/sdk_config.h \
- /mnt/c/Users/damon/energy_meter/buckler/software/boards/buckler_revA/./app_config.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revA/./app_config.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/nrfx_common.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf_peripherals.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_peripherals.h \
@@ -61,6 +74,6 @@ _build/kobukiUtilities.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/sdk_errors.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/sdk_resources.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/nrfx_errors.h \
- /mnt/c/Users/damon/energy_meter/buckler/software/boards/buckler_revA/./buckler.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revA/./buckler.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_gpio.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_saadc.h

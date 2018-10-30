@@ -35,6 +35,7 @@ static void sensor_read_callback(float lux){
 	lower = lux - lux*0.10;
 
 	update_thresh = true;
+	printf("LUX VALUE (x1000): %f\n", lux);
 }
 
 //This function will be called when the max44009 is interrupted
@@ -98,7 +99,18 @@ int main(void){
 	while(1){
 		//All we should do is wait for an interrupt, handle it, then wait again
 		//We probably need a couple more pieces here, not sure yet though
-		__WFE();
+		//__WFE();
 	
+		if (update_thresh){
+			max44009_set_upper_threshold(upper);
+			max44009_set_lower_threshold(lower);
+			update_thresh = false;
+		}
+
+		max44009_schedule_read_lux();
+
+		//printf("Upper: %f, Lower: %f\n", upper, lower);
+
+		nrf_delay_ms(1000);
 	}
 }

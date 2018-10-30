@@ -5,6 +5,7 @@
 #include "nrf_log_ctrl.h"
 
 #include "max44009.h"
+#include "buckler.h"
 
 static const nrf_twi_mngr_t* twi_mngr_instance;
 static uint8_t int_status_buf[2] = {MAX44009_INT_STATUS, 0};
@@ -68,6 +69,7 @@ static void interrupt_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t ac
 }
 
 static float calc_lux(void) {
+  //printf("lux_read_buf[0]: %d, lux_read_buf[1]: %d\n", lux_read_buf[0], lux_read_buf[1]);
   uint8_t exp = (lux_read_buf[0] & 0xF0) >> 4;
   uint8_t mant = (lux_read_buf[0] & 0x0F) << 4;
   mant |= lux_read_buf[1] & 0xF;
