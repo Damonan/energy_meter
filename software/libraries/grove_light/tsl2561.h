@@ -55,17 +55,21 @@ typedef void tsl2561_read_lux_callback(float lux);
 typedef void tsl2561_interrupt_callback(void);
 
 typedef struct {
-  bool continuous;  // enable continuous sample mode
-  bool manual;      // allow manual IC configuration
-  bool cdr;         // perform current division for high brightness
-  uint8_t int_time; // integration timing, (automatically set if manual = 0)
-} tsl2561_config_t;
+  bool gain;  	    // enable continuous sample mode
+  uint8_t int_time; // integration timing
+} tsl2561_timing_config_t;
+
+typedef struct {
+  uint8_t interrupt_mode; //interrupt mode
+  uint8_t persist;	  //persist option
+} tsl2561_interrupt_config_t
 
 void  tsl2561_init(const nrf_twi_mngr_t* instance);
 void  tsl2561_set_interrupt_callback(tsl2561_interrupt_callback* callback);
 void  tsl2561_enable_interrupt(void);
 void  tsl2561_disable_interrupt(void);
-void  tsl2561_config(tsl2561_config_t config);
+void  tsl2561_timing_config(tsl2561_timing_config_t timing_config);
+void  tsl2561_interrupt_config(tsl2561_interrupt_config_t interrupt_config);
 void  tsl2561_set_read_lux_callback(tsl2561_read_lux_callback* callback);
 void  tsl2561_set_upper_threshold(float thresh);
 void  tsl2561_set_lower_threshold(float thresh);
