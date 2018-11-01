@@ -1,6 +1,6 @@
 _build/kobukiSensor.o: \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiSensor.c \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiSensor.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/kobuki/kobukiSensor.c \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/kobuki/kobukiSensor.h \
  /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
  /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h \
  /usr/arm-none-eabi/include/stdint.h \
@@ -9,7 +9,7 @@ _build/kobukiSensor.o: \
  /usr/arm-none-eabi/include/_newlib_version.h \
  /usr/arm-none-eabi/include/sys/_intsup.h \
  /usr/arm-none-eabi/include/sys/_stdint.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiSensorTypes.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/kobuki/kobukiSensorTypes.h \
  /usr/arm-none-eabi/include/stdio.h /usr/arm-none-eabi/include/_ansi.h \
  /usr/arm-none-eabi/include/newlib.h \
  /usr/arm-none-eabi/include/sys/config.h \

@@ -1,5 +1,5 @@
 _build/kobukiUART.o: \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiUART.c \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/kobuki/kobukiUART.c \
  /usr/arm-none-eabi/include/stdio.h /usr/arm-none-eabi/include/_ansi.h \
  /usr/arm-none-eabi/include/newlib.h \
  /usr/arm-none-eabi/include/_newlib_version.h \
@@ -42,16 +42,16 @@ _build/kobukiUART.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_util_platform.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cm4.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmInstr.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/cmsis_gcc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmFunc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmSimd.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_bitfields.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_name_change.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nrf_assert.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_error.h \
@@ -59,6 +59,6 @@ _build/kobukiUART.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/drivers_nrf/nrf_soc_nosd/nrf_error.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nordic_common.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_error_weak.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiUART.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiUtilities.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/kobuki/kobukiSensorTypes.h
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/kobuki/kobukiUART.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/kobuki/kobukiUtilities.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/kobuki/kobukiSensorTypes.h

@@ -1,5 +1,5 @@
 _build/max44009.o: \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/light_sensor/max44009.c \
+ /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/max44009/max44009.c \
  /usr/arm-none-eabi/include/math.h /usr/arm-none-eabi/include/sys/reent.h \
  /usr/arm-none-eabi/include/_ansi.h /usr/arm-none-eabi/include/newlib.h \
  /usr/arm-none-eabi/include/_newlib_version.h \
@@ -96,7 +96,7 @@ _build/max44009.o: \
  /usr/arm-none-eabi/include/machine/stdlib.h \
  /usr/arm-none-eabi/include/alloca.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/balloc/nrf_balloc.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/light_sensor/max44009.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/max44009/max44009.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/twi_mngr/nrf_twi_mngr.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/legacy/nrf_drv_twi.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/include/nrfx_twim.h \

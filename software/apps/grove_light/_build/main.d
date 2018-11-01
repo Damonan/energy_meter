@@ -109,4 +109,4 @@ _build/main.o: main.c /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/experimental_log/nrf_log_default_backends.h \
  /home/student/energy_meter/buckler/software/boards/buckler_revA/./buckler.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_saadc.h \
- ../../libraries/light_sensor/max44009.h
+ ../../libraries/grove_light/tsl2561.h

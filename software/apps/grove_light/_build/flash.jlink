@@ -1,5 +1,5 @@
 r
-loadfile _build/light_sensor_sdk15_blank.hex 
+loadfile _build/grove_light_sdk15_blank.hex 
 r
 g
 exit

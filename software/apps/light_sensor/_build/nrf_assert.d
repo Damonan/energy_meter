@@ -9,16 +9,16 @@ _build/nrf_assert.o: \
  /usr/arm-none-eabi/include/sys/_intsup.h \
  /usr/arm-none-eabi/include/sys/_stdint.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cm4.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmInstr.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/cmsis_gcc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmFunc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmSimd.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_bitfields.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_name_change.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_error.h \
  /usr/arm-none-eabi/include/stdio.h /usr/arm-none-eabi/include/_ansi.h \

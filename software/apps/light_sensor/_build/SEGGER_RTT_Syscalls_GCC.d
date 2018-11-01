@@ -1,7 +1,7 @@
 _build/SEGGER_RTT_Syscalls_GCC.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c \
- ../../../buckler/software/nrf5x-base//make/config/nrf52840/config/sdk_config.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/./app_config.h \
+ ../../../buckler/software/nrf5x-base//make/config/nrf52832/config/sdk_config.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/./app_config.h \
  /usr/arm-none-eabi/include/reent.h \
  /usr/arm-none-eabi/include/sys/reent.h \
  /usr/arm-none-eabi/include/_ansi.h /usr/arm-none-eabi/include/newlib.h \
@@ -24,16 +24,16 @@ _build/SEGGER_RTT_Syscalls_GCC.o: \
  /usr/arm-none-eabi/include/sys/_stdint.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cm4.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmInstr.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/cmsis_gcc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmFunc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmSimd.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_bitfields.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_name_change.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nrf_assert.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_error.h \

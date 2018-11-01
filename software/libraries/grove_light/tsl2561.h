@@ -7,16 +7,18 @@
 #include "nrf_twi_mngr.h"
 
 #define TSL2561_ADDR       	0x29
-#define TSL2561_INT_TIME   	0x01
-#define TSL2561_THRESH_LO_LO  	0x02
-#define TSL2561_THRESH_LO_HI 	0x03
-#define TSL2561_THRESH_HI_LO  	0x04
-#define TSL2561_THRESH_HI_HI 	0x05
-#define TSL2561_INT_CTRL 	0x06
-#define TSL2561_LUX0_LO     	0x0c
-#define TSL2561_LUX0_HI     	0x0d
-#define TSL2561_LUX1_LO	    	0x0e
-#define TSL2561_LUX1_HI     	0x0f
+#define TSL2561_POWER		0x80
+#define TSL2561_TIMING	   	0x81
+#define TSL2561_THRESH_LO_LO  	0x82
+#define TSL2561_THRESH_LO_HI 	0x83
+#define TSL2561_THRESH_HI_LO  	0x84
+#define TSL2561_THRESH_HI_HI 	0x85
+#define TSL2561_INT	 	0x86
+#define TSL2561_ID		0x8a
+#define TSL2561_LUX0_LO     	0x8c
+#define TSL2561_LUX0_HI     	0x8d
+#define TSL2561_LUX1_LO	    	0x8e
+#define TSL2561_LUX1_HI     	0x8f
 
 //Grove sensor coefficients (Using TMB Package coeffs, not sure which one we have)
 #define K1T	0x0040
@@ -55,23 +57,14 @@ typedef void tsl2561_read_lux_callback(float lux);
 typedef void tsl2561_interrupt_callback(void);
 
 typedef struct {
-  bool gain;  	    // enable continuous sample mode
-  uint8_t int_time; // integration timing
-} tsl2561_timing_config_t;
-
-typedef struct {
-  uint8_t interrupt_mode; //interrupt mode
+  bool gain;
+  uint8_t int_time;
+  uint8_t int_mode; //interrupt mode
   uint8_t persist;	  //persist option
-} tsl2561_interrupt_config_t
+} tsl2561_config_t;
 
 void  tsl2561_init(const nrf_twi_mngr_t* instance);
-void  tsl2561_set_interrupt_callback(tsl2561_interrupt_callback* callback);
-void  tsl2561_enable_interrupt(void);
-void  tsl2561_disable_interrupt(void);
-void  tsl2561_timing_config(tsl2561_timing_config_t timing_config);
-void  tsl2561_interrupt_config(tsl2561_interrupt_config_t interrupt_config);
-void  tsl2561_set_read_lux_callback(tsl2561_read_lux_callback* callback);
-void  tsl2561_set_upper_threshold(float thresh);
-void  tsl2561_set_lower_threshold(float thresh);
-void  tsl2561_schedule_read_lux(void);
-float tsl2561_read_lux(void);
+void  tsl2561_ID_transfer(void);
+void  tsl2561_power_on(bool on);
+void  tsl2561_config(tsl2561_config_t config);
+void  tsl2561_read_lux(bool channel);

@@ -1,5 +1,5 @@
 _build/better_error_handling.o: \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/../../libraries/better_error/better_error_handling.c \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/../../libraries/better_error/better_error_handling.c \
  /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h \
  /usr/arm-none-eabi/include/stdint.h \
  /usr/arm-none-eabi/include/machine/_default_types.h \
@@ -34,16 +34,16 @@ _build/better_error_handling.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_error.h \
  /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cm4.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmInstr.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/cmsis_gcc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmFunc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmSimd.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_bitfields.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_name_change.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/sdk_errors.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/drivers_nrf/nrf_soc_nosd/nrf_error.h \
@@ -53,15 +53,15 @@ _build/better_error_handling.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/delay/nrf_delay.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/nrfx.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/nrfx_config.h \
- ../../../buckler/software/nrf5x-base//make/config/nrf52840/config/sdk_config.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/./app_config.h \
+ ../../../buckler/software/nrf5x-base//make/config/nrf52832/config/sdk_config.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/./app_config.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/nrfx_common.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf_peripherals.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_peripherals.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52832_peripherals.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/nrfx_glue.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/legacy/apply_old_config.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/soc/nrfx_irqs.h \
- ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/soc/nrfx_irqs_nrf52840.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/soc/nrfx_irqs_nrf52832.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nrf_assert.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_util.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
@@ -99,5 +99,5 @@ _build/better_error_handling.o: \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/include/nrfx_gpiote.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_gpiote.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_gpio.h \
- /home/student/energy_meter/buckler/software/boards/buckler_revA/./buckler.h \
+ /home/student/energy_meter/buckler/software/boards/buckler_revB/./buckler.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_saadc.h

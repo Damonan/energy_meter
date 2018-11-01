@@ -15,7 +15,7 @@
 #include "nrf_log_default_backends.h"
 #include "buckler.h"
 
-#include "../../libraries/light_sensor/tsl2561.h"
+#include "../../libraries/grove_light/tsl2561.h"
 
 //Variables to maintain thresholds
 bool update_thresh = false;
@@ -72,29 +72,36 @@ int main(void){
 	twi_init();
 	
 	//This object is documented in tsl2561.h. Configures our light sensor
-	const tsl2561_config_t config = {
+	/*const tsl2561_config_t config = {
 		.continuous = 0,
 		.manual = 0,
 		.cdr = 0,
 		.int_time = 3,
-	};
+	};*/
 
 	//Not exactly sure why this is necessary yet
 	nrf_delay_ms(500);
 
 	//Series of function calls from the tsl2561 library
 	tsl2561_init(&twi_mngr_instance);
-	tsl2561_set_read_lux_callback(sensor_read_callback);
+	
+	tsl2561_power_on(1);
+
+	const tsl2561_config_t config = {
+		.gain =  0,
+		.int_time = 2,
+		.int_mode = 0,
+		.persist = 15,
+	};
+
 	tsl2561_config(config);
-	//schedule_read_lux is scheduling a transaction on the twi bus
-	tsl2561_schedule_read_lux();
-	tsl2561_set_interrupt_callback(interrupt_callback);
-	tsl2561_enable_interrupt();
 
-	//Set threshold for high or low
-	tsl2561_set_upper_threshold(upper);
-	tsl2561_set_lower_threshold(lower);
+	while(1){
+		tsl2561_read_lux(0);
+		nrf_delay_ms(5000);
+	}
 
+	/*
 	while(1){
 		//All we should do is wait for an interrupt, handle it, then wait again
 		//We probably need a couple more pieces here, not sure yet though
@@ -111,5 +118,5 @@ int main(void){
 		//printf("Upper: %f, Lower: %f\n", upper, lower);
 
 		nrf_delay_ms(1000);
-	}
+	}*/
 }

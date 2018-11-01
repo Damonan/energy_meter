@@ -35,13 +35,13 @@ static void sensor_read_callback(float lux){
 	lower = lux - lux*0.10;
 
 	update_thresh = true;
-	printf("LUX VALUE (x1000): %f\n", lux);
+	printf("LUX VALUE: %f\n", lux);
 }
 
 //This function will be called when the max44009 is interrupted
 static void interrupt_callback(){
 	max44009_schedule_read_lux();
-	printf("Interrupt happened");
+	printf("Interrupt happened\n");
 }
 
 //This will initialize our twi struct
@@ -77,7 +77,7 @@ int main(void){
 		.continuous = 0,
 		.manual = 0,
 		.cdr = 0,
-		.int_time = 3,
+		.int_time = 0,
 	};
 
 	//Not exactly sure why this is necessary yet
@@ -85,8 +85,16 @@ int main(void){
 
 	//Series of function calls from the max44009 library
 	max44009_init(&twi_mngr_instance);
-	max44009_set_read_lux_callback(sensor_read_callback);
 	max44009_config(config);
+
+	while (1) {
+		max44009_read_lux();
+		nrf_delay_ms(5000);
+	}
+
+	
+	/*
+	max44009_set_read_lux_callback(sensor_read_callback);
 	//schedule_read_lux is scheduling a transaction on the twi bus
 	max44009_schedule_read_lux();
 	max44009_set_interrupt_callback(interrupt_callback);
@@ -100,17 +108,17 @@ int main(void){
 		//All we should do is wait for an interrupt, handle it, then wait again
 		//We probably need a couple more pieces here, not sure yet though
 		//__WFE();
-	
 		if (update_thresh){
 			max44009_set_upper_threshold(upper);
 			max44009_set_lower_threshold(lower);
 			update_thresh = false;
 		}
 
-		max44009_schedule_read_lux();
+		//max44009_schedule_read_lux();
 
 		//printf("Upper: %f, Lower: %f\n", upper, lower);
 
-		nrf_delay_ms(1000);
+		nrf_delay_ms(5000);
 	}
+	*/
 }

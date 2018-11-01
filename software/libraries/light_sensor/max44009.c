@@ -46,6 +46,12 @@ static nrf_twi_mngr_transfer_t const threshold_write_transfer[] = {
   NRF_TWI_MNGR_WRITE(MAX44009_ADDR, thresh_buf, 2, 0),
 };
 
+//Added this to try and read threshold on startup
+static nrf_twi_mngr_transfer_t const threshold_read_transfer[] = {
+  NRF_TWI_MNGR_WRITE(MAX44009_ADDR, config_buf, 1, NRF_TWI_MNGR_NO_STOP),
+  NRF_TWI_MNGR_READ(MAX44009_ADDR, thresh_buf+1, 1, 0)
+};
+
 static nrf_twi_mngr_transfer_t const int_time_write_transfer[] = {
   NRF_TWI_MNGR_WRITE(MAX44009_ADDR, time_buf, 2, 0),
 };
@@ -64,12 +70,12 @@ static void interrupt_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t ac
   APP_ERROR_CHECK(error);
 
   if(int_status_buf[1] == 1) {
-    interrupt_callback();
+    	printf("int_status_buf[1]: %x\n", int_status_buf[1]);
+	interrupt_callback();
   }
 }
 
 static float calc_lux(void) {
-  //printf("lux_read_buf[0]: %d, lux_read_buf[1]: %d\n", lux_read_buf[0], lux_read_buf[1]);
   uint8_t exp = (lux_read_buf[0] & 0xF0) >> 4;
   uint8_t mant = (lux_read_buf[0] & 0x0F) << 4;
   mant |= lux_read_buf[1] & 0xF;
@@ -94,6 +100,12 @@ void max44009_set_interrupt_callback(max44009_interrupt_callback* callback) {
   nrf_drv_gpiote_in_config_t int_gpio_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(0);
   int error = nrf_drv_gpiote_in_init(BUCKLER_LIGHT_INTERRUPT, &int_gpio_config, interrupt_handler);
   APP_ERROR_CHECK(error);
+}
+
+void max44009_read_threshold(void) {
+  int error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, threshold_read_transfer, sizeof(threshold_read_transfer)/sizeof(threshold_read_transfer[0]), NULL);
+  APP_ERROR_CHECK(error);
+  printf("thresh_buf[1]: %x\n", thresh_buf[1]);
 }
 
 void max44009_enable_interrupt(void) {
@@ -239,5 +251,6 @@ void max44009_schedule_read_lux(void) {
 
 float max44009_read_lux(void) {
   nrf_twi_mngr_perform(twi_mngr_instance, NULL, lux_read_transfer, sizeof(lux_read_transfer)/sizeof(lux_read_transfer[0]), NULL);
+  printf("lux_read_buf[0]: %x lux_read_buf[1]: %x\n", lux_read_buf[0], lux_read_buf[1]);
   return calc_lux();
 }
