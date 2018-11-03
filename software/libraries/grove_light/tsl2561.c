@@ -24,10 +24,10 @@ static const uint8_t ch1_low_addr = TSL2561_LUX1_LO;
 static const uint8_t ch1_high_addr = TSL2561_LUX1_HI;
 
 //Threshold addresses of the grove sensor
-static const uint8_t thresh0_low_addr = TSL2561_THRESH0_LO;
-static const uint8_t thresh0_high_addr = TSL2561_THRESH0_HI;
-static const uint8_t thresh1_low_addr = TSL2561_THRESH1_LO;
-static const uint8_t thresh1_high_addr = TSL2561_THRESH1_HI;
+static const uint8_t thresh0_low_addr = TSL2561_THRESH_LO_LO;
+static const uint8_t thresh0_high_addr = TSL2561_THRESH_LO_HI;
+static const uint8_t thresh1_low_addr = TSL2561_THRESH_HI_LO;
+static const uint8_t thresh1_high_addr = TSL2561_THRESH_HI_HI;
 
 //Various buffer for reading/write bytes to the corresponding register
 static uint8_t ID_test_buf[1] = {0};
@@ -47,15 +47,13 @@ static uint8_t write_thresh_buf[2] = {0};
 unsigned int iGain;
 unsigned int tInt;
 
-//static tsl2561_read_lux_callback* lux_read_callback;
-//static tsl2561_interrupt_callback* interrupt_callback;
-
 //static void lux_callback(ret_code_t result, void* p_context);
 
 ////////////////////////////////////////////////////////////////
 //           INTERNAL FUNCTIONS FOR TWI TRANSFERS             //
 ////////////////////////////////////////////////////////////////
 
+//General I2C read data protocol to be used with the buffers above
 void read_data (uint8_t addr, uint8_t length,  uint8_t buf[]){
 	uint8_t command;
 	if (length == 2){
@@ -72,6 +70,7 @@ void read_data (uint8_t addr, uint8_t length,  uint8_t buf[]){
 	APP_ERROR_CHECK(error);
 }
 
+//General I2C write data protocl to be used with the buffers above
 void write_data (uint8_t addr, uint8_t length, uint8_t buf[]){
 	uint8_t command;
 	if (length == 2){
@@ -88,9 +87,8 @@ void write_data (uint8_t addr, uint8_t length, uint8_t buf[]){
 	APP_ERROR_CHECK(error);
 }
 
-
-
-unsigned long calc_lux(void){
+//Lux calculation taken directly from the datasheet
+unsigned int calc_lux(void){
 	//Get values from our read buffers
 	unsigned int ch0 = (read_lux0_buf[1] << 8) | read_lux0_buf[0]; 
 	unsigned int ch1 = (read_lux1_buf[1] << 8) | read_lux1_buf[0];
@@ -146,28 +144,28 @@ unsigned long calc_lux(void){
 	if (temp < 0) temp = 0;
 
 	temp += (1 << (LUX_SCALE-1));
-	
+
 	unsigned long lux = temp >> LUX_SCALE;
-	
+
 	return(lux);
 }
-
 
 ////////////////////////////////////////////////////////////////
 //           EXTERNAL FUNCTIONS TO BE USED IN APPS            //
 ////////////////////////////////////////////////////////////////
 
+//Initialize our twi instance to be used throughout operation
 void tsl2561_init(const nrf_twi_mngr_t* instance) {
   	twi_mngr_instance = instance;
 }
 
-//Used for testing purposes
+//Used for testing purposes. The ID register should always return 0x50
 void tsl2561_ID_transfer(void){
 	read_data(TSL2561_ID, 1, ID_test_buf);
 	printf("ID_test_buf[0]: %x\n", ID_test_buf[0]);
 }
 
-//To control the power of the device
+//To control the power of the device, write a byte to the control register
 void tsl2561_power_on(bool on){
 	power_buf[0] = on ? 3 : 0;
 	write_data(TSL2561_POWER, 1, power_buf);
@@ -185,6 +183,7 @@ void tsl2561_config(tsl2561_config_t config){
 	write_data(TSL2561_INT, 1, config_interrupt_buf);
 }
 
+//To clear interrupts, the tsl2561 requires a write to the command register
 void tsl2561_clear_interrupt(){
 	uint8_t command = TSL2561_CLEAR_INT;
 	nrf_twi_mngr_transfer_t transaction[] = {
@@ -195,27 +194,36 @@ void tsl2561_clear_interrupt(){
 	APP_ERROR_CHECK(error);
 }
 
-void tsl2561_write_threshold(float threshold){
-	//TODO: how to convert these values?
-	//write_thresh_buf[0] = 
-	//write_thresh_buf[1] = 
-
-	//just testing for now
-	write_thresh_buf[0] = 10;
-	write_thresh_buf[1] = 0x23;
-	write_data(TSL2561_THRESH0_LO, 2, write_thresh_buf);
+//Write to the 16-bit thresholds by writing two bytes to the LO register without a stop condition in between
+void tsl2561_write_threshold_lower(unsigned int threshold){
+	write_thresh_buf[0] = threshold & 0xFF;
+	write_thresh_buf[1] = (threshold >> 8) & 0xFF;
+	write_data(TSL2561_THRESH_LO_LO, 2, write_thresh_buf);
 }
 
-uint8_t tsl2561_read_threshold(void){
-	read_data(TSL2561_THRESH0_LO, 2, read_thresh_buf);
-	return (read_thresh_buf[0]);
+void tsl2561_write_threshold_upper(unsigned int threshold){
+	write_thresh_buf[0] = threshold & 0xFF;
+	write_thresh_buf[1] = (threshold >> 8) & 0xFF;
+	write_data(TSL2561_THRESH_HI_LO, 2, write_thresh_buf);
 }
 
-unsigned long tsl2561_read_lux(void){
+//Read to the 16-bit thresholds by reading two bytes from the LO register without a stop condition in between
+unsigned int tsl2561_read_threshold_lower(void){
+	read_data(TSL2561_THRESH_LO_LO, 2, read_thresh_buf);
+	unsigned int threshold = (read_thresh_buf[1] << 8) | read_thresh_buf[0]; 
+	return (threshold);
+}
+
+unsigned int tsl2561_read_threshold_upper(void){
+	read_data(TSL2561_THRESH_HI_LO, 2, read_thresh_buf);
+	unsigned int threshold = (read_thresh_buf[1] << 8) | read_thresh_buf[0];
+	return (threshold);
+}
+
+//Read the lux valus and return the calculated value from both
+unsigned int tsl2561_read_lux(void){
 	read_data(TSL2561_LUX0_LO, 2, read_lux0_buf);
 	read_data(TSL2561_LUX1_LO, 2, read_lux1_buf);	
-	//printf("lux_read0_buf[0]: %x, lux_read0_buf[1]: %x\n", read_lux0_buf[0], read_lux0_buf[1]);
-	//printf("lux_read1_buf[0]: %x, lux_read1_buf[1]: %x\n", read_lux1_buf[0], read_lux1_buf[1]);
 	return(calc_lux());
 }
 
