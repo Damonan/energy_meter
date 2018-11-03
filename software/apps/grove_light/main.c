@@ -38,9 +38,25 @@ static void sensor_read_callback(float lux){
 }
 
 //This function will be called when the tsl2561 is interrupted
-static void interrupt_callback(){
-	tsl2561_schedule_read_lux();
+static void interrupt_handler(){
+	unsigned long lux = tsl2561_read_lux();
+	upper = lux + lux*0.10;
+	lower = lux - lux*0.10;
+
+	tsl2561_set_threshold();
+	
+	tsl2561_clear_interrupt();
+	
 	printf("Interrupt happened");
+}
+
+static void configure_interrupt(int pin, void *callback){
+	if (!nrf_drv_gpiote_is_init()){
+		nrf_drv_gpiote_init();
+	}
+	nrf_drv_gpiote_in_config_t int_gpio_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(0);
+	int error = nrf_drv_gpiote_in_init(pin, &int_gpio_config, callback);
+	APP_ERROR_CHECK(error);
 }
 
 //This will initialize our twi struct
@@ -70,19 +86,10 @@ int main(void){
 
 	//Call our init function to get our twi instance
 	twi_init();
-	
-	//This object is documented in tsl2561.h. Configures our light sensor
-	/*const tsl2561_config_t config = {
-		.continuous = 0,
-		.manual = 0,
-		.cdr = 0,
-		.int_time = 3,
-	};*/
 
 	//Not exactly sure why this is necessary yet
 	nrf_delay_ms(500);
 
-	//Series of function calls from the tsl2561 library
 	tsl2561_init(&twi_mngr_instance);
 	
 	tsl2561_power_on(1);
@@ -90,14 +97,16 @@ int main(void){
 	const tsl2561_config_t config = {
 		.gain =  0,
 		.int_time = 2,
-		.int_mode = 0,
-		.persist = 15,
+		.int_mode = 1,
+		.persist = 1,
 	};
 
 	tsl2561_config(config);
+	configure_interrupt(13, interrupt_handler);
 
 	while(1){
-		tsl2561_read_lux(0);
+		//printf("Lux Value: %llu\n", tsl2561_read_lux());
+		//tsl2561_ID_transfer();
 		nrf_delay_ms(5000);
 	}
 

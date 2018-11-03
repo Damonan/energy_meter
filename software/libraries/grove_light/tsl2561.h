@@ -7,18 +7,19 @@
 #include "nrf_twi_mngr.h"
 
 #define TSL2561_ADDR       	0x29
-#define TSL2561_POWER		0x80
-#define TSL2561_TIMING	   	0x81
-#define TSL2561_THRESH_LO_LO  	0x82
-#define TSL2561_THRESH_LO_HI 	0x83
-#define TSL2561_THRESH_HI_LO  	0x84
-#define TSL2561_THRESH_HI_HI 	0x85
-#define TSL2561_INT	 	0x86
-#define TSL2561_ID		0x8a
-#define TSL2561_LUX0_LO     	0x8c
-#define TSL2561_LUX0_HI     	0x8d
-#define TSL2561_LUX1_LO	    	0x8e
-#define TSL2561_LUX1_HI     	0x8f
+#define TSL2561_CLEAR_INT	0xc0
+#define TSL2561_POWER		0x00
+#define TSL2561_TIMING	   	0x01
+#define TSL2561_THRESH0_LO  	0x02
+#define TSL2561_THRESH0_HI 	0x03
+#define TSL2561_THRESH1_LO  	0x04
+#define TSL2561_THRESH1_HI 	0x05
+#define TSL2561_INT	 	0x06
+#define TSL2561_ID		0x0a
+#define TSL2561_LUX0_LO     	0x0c
+#define TSL2561_LUX0_HI     	0x0d
+#define TSL2561_LUX1_LO	    	0x0e
+#define TSL2561_LUX1_HI     	0x0f
 
 //Grove sensor coefficients (Using TMB Package coeffs, not sure which one we have)
 #define K1T	0x0040
@@ -67,4 +68,4 @@ void  tsl2561_init(const nrf_twi_mngr_t* instance);
 void  tsl2561_ID_transfer(void);
 void  tsl2561_power_on(bool on);
 void  tsl2561_config(tsl2561_config_t config);
-void  tsl2561_read_lux(bool channel);
+unsigned long tsl2561_read_lux(void);
