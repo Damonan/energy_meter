@@ -13,14 +13,17 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "nrf_drv_gpiote.h"
+#include "nrf.h"
+#include "app_error.h"
 #include "buckler.h"
 
 #include "../../libraries/grove_light/tsl2561.h"
 
 //Variables to maintain thresholds
 bool update_thresh = false;
-float upper;
-float lower;
+unsigned int upper;
+unsigned int lower;
 
 //Macro for defining a TWI instance
 //Param 1: instance name; Param 2: queue size; Param 3: index
@@ -34,12 +37,31 @@ static void interrupt_handler(){
 	upper = lux + lux*0.10;
 	lower = lux - lux*0.10;
 
-	tsl2561_set_threshold();
+	tsl2561_write_threshold_upper(upper);
+	tsl2561_write_threshold_lower(lower);
 	
 	tsl2561_clear_interrupt();
 	
 	printf("Interrupt happened");
 }
+
+/* Some thoughts on how to get an interrupt working
+void GPIOTE_INTERRUPT_CONFIG(int pin){
+	//Set pin as HiToLo event trigger
+	NRF_GPIOTE->CONFIG[0] = (2 << 16) | (pin << 8) | 1;
+	NRF_GPIOTE->INTENSET = 1;
+}
+
+void GPIO_LED_CONFIG(void){
+	NRF_GPIO->PIN_CNF[0] = 1;
+}
+
+void GPIOTE_IRQHandler(void){
+	NRF_GPIOTE->EVENTS_IN[0] = 0;
+	NRF_GPIOTE->TASKS_SET[0] = 1;
+	printf("Interrupt happened\n");
+}
+*/
 
 //Want to tell the nRF to trigger an interrupt when 'pin' transitions from high to low
 //The GPIO here should be whichever one the INT line of tsl2561 is wired to
@@ -88,18 +110,39 @@ int main(void){
 	const tsl2561_config_t config = {
 		.gain =  0,
 		.int_time = 2,
-		.int_mode = 1,
+		.int_mode = 11, //set to test mode (revert to 1 for proper operation mode)
 		.persist = 1,
 	};
 
 	tsl2561_config(config);
 	
-	configure_interrupt(13, interrupt_handler);
+	//configure_interrupt(13, interrupt_handler);
+
+	/*From interrupts example
+	ret_code_t error_code = NRF_SUCCESS;
+
+	error_code = NRF_LOG_INIT(NULL);
+	APP_ERROR_CHECK(error_code);
+	NRF_LOG_DEFAULT_BACKENDS_INIT();
+	printf("Log initialized!\n");
+
+	GPIOTE_INTERRUPT_CONFIG(23);
+	GPIO_LED_CONFIG();
+	*/
+
+	tsl2561_write_threshold_upper(10000);
+	tsl2561_write_threshold_lower(0);
+
+	printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
 
 	while(1){
-		__WFE();
-
-		printf("Lux Value: %i\n", tsl2561_read_lux());
-		nrf_delay_ms(5000);
+		//printf("Lux Value: %i\n", tsl2561_read_lux());
+		//tsl2561_generate_interrupt();
+		//printf("interrupt low\n");
+		printf("Looping\n");
+		nrf_delay_ms(2500);
+		tsl2561_clear_interrupt();
+		//printf("interrupt high\n");
+		//nrf_delay_ms(2500);
 	}
 }

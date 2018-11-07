@@ -107,6 +107,10 @@ _build/main.o: main.c /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
  /usr/arm-none-eabi/include/alloca.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/balloc/nrf_balloc.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/experimental_log/nrf_log_default_backends.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/legacy/nrf_drv_gpiote.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/include/nrfx_gpiote.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_gpiote.h \
+ ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_gpio.h \
  /home/student/energy_meter/buckler/software/boards/buckler_revA/./buckler.h \
  ../../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_saadc.h \
  ../../libraries/grove_light/tsl2561.h

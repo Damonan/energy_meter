@@ -43,6 +43,9 @@ static uint8_t read_lux1_buf[2] = {0};
 static uint8_t read_thresh_buf[2] = {0};
 static uint8_t write_thresh_buf[2] = {0};
 
+//Write buffer for a test interrupt
+static uint8_t write_test_int[1] = {0};
+
 //Local config settings to be used in calc_lux
 unsigned int iGain;
 unsigned int tInt;
@@ -173,7 +176,7 @@ void tsl2561_power_on(bool on){
 
 //To configure the timing and interrupt options of our device
 void tsl2561_config(tsl2561_config_t config){
-	config_timing_buf[0] = (config.gain << 4) | (config.int_time & 11);
+	config_timing_buf[0] = (config.gain << 4) | (config.int_time & 0x3);
 	config_interrupt_buf[0] = (config.int_mode << 4) | (config.persist);
 	
 	tInt = config.int_time;
@@ -225,5 +228,11 @@ unsigned int tsl2561_read_lux(void){
 	read_data(TSL2561_LUX0_LO, 2, read_lux0_buf);
 	read_data(TSL2561_LUX1_LO, 2, read_lux1_buf);	
 	return(calc_lux());
+}
+
+//Generate a test interrupt
+void tsl2561_generate_interrupt(void){
+	write_test_int[0] = 0x30;
+	write_data(TSL2561_INT , 1, write_test_int); 
 }
 
