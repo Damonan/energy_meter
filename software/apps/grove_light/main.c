@@ -110,8 +110,8 @@ int main(void){
 	const tsl2561_config_t config = {
 		.gain =  0,
 		.int_time = 2,
-		.int_mode = 11, //set to test mode (revert to 1 for proper operation mode)
-		.persist = 1,
+		.int_mode = 3, //set to test mode (revert to 1 for proper operation mode)
+		.persist = 10,
 	};
 
 	tsl2561_config(config);
@@ -136,10 +136,10 @@ int main(void){
 	printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
 
 	while(1){
-		//printf("Lux Value: %i\n", tsl2561_read_lux());
-		//tsl2561_generate_interrupt();
+		printf("Lux Value: %i\n", tsl2561_read_lux());
+		tsl2561_generate_interrupt();
 		//printf("interrupt low\n");
-		printf("Looping\n");
+		//printf("Looping\n");
 		nrf_delay_ms(2500);
 		tsl2561_clear_interrupt();
 		//printf("interrupt high\n");

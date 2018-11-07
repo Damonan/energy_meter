@@ -71,3 +71,4 @@ void  tsl2561_power_on(bool on);
 void  tsl2561_config(tsl2561_config_t config);
 unsigned int tsl2561_read_lux(void);
 void tsl2561_generate_interrupt(void);
+void tsl2561_clear_interrupt(void);

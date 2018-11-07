@@ -162,7 +162,7 @@ void tsl2561_init(const nrf_twi_mngr_t* instance) {
   	twi_mngr_instance = instance;
 }
 
-//Used for testing purposes. The ID register should always return 0x50
+//Used for testing purposes. The ID register should always return the same value
 void tsl2561_ID_transfer(void){
 	read_data(TSL2561_ID, 1, ID_test_buf);
 	printf("ID_test_buf[0]: %x\n", ID_test_buf[0]);
@@ -182,15 +182,17 @@ void tsl2561_config(tsl2561_config_t config){
 	tInt = config.int_time;
 	iGain = config.gain;
 
+	printf("config_timing_buf[0]: %x, config_interrupt_buf[0]: %x\n", config_timing_buf[0], config_interrupt_buf[0]);
+
 	write_data(TSL2561_TIMING, 1, config_timing_buf);
 	write_data(TSL2561_INT, 1, config_interrupt_buf);
 }
 
 //To clear interrupts, the tsl2561 requires a write to the command register
-void tsl2561_clear_interrupt(){
-	uint8_t command = TSL2561_CLEAR_INT;
+void tsl2561_clear_interrupt(void){
+	uint8_t command = 0xc0;
 	nrf_twi_mngr_transfer_t transaction[] = {
-		NRF_TWI_MNGR_WRITE(TSL2561_ADDR, &command, 1, NRF_TWI_MNGR_NO_STOP),
+		NRF_TWI_MNGR_WRITE(TSL2561_ADDR, &command, 1, 0),
 	};
 
 	int error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, transaction, sizeof(transaction)/sizeof(transaction[0]), NULL); 
