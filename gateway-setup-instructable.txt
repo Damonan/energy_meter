@@ -1,0 +1,25 @@
+1. Load Raspberry Pi 3 B+ with Raspbian
+
+Now install nodejs
+
+2. curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+
+3. source ~/.bashrc
+
+4. nvm install 8
+
+5. nvm use 8
+
+6. npm install npm@latest -g
+
+7. npm install async
+
+8. npm install noble
+
+9. sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
+
+10. git clone git@github.com:lab11/powerblade.git
+
+11. cd powerblade/software/ble
+
+12. node powerblade_data.js
