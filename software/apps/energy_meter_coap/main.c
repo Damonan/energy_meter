@@ -22,17 +22,17 @@
 #include <openthread/message.h>
 
 #include "simple_thread.h"
-#include "permamote_coap.h"
+#include "energy_meter_coap.h"
 #include "thread_coap.h"
 #include "device_id.h"
-#include "ntp.h"
+#include "ntp.h" 
 
-#include "permamote.h"
+#include "buckler.h"
 #include "ab1815.h"
-#include "max44009.h"
-#include "ms5637.h"
-#include "si7021.h"
-#include "tcs34725.h"
+// #include "max44009.h"
+// #include "ms5637.h"
+// #include "si7021.h"
+// #include "tcs34725.h"
 
 #define COAP_SERVER_ADDR "64:ff9b::22da:2eb5"
 #define NTP_SERVER_ADDR "64:ff9b::8106:f1c"
@@ -62,7 +62,7 @@ static otIp6Address m_peer_address =
     }
 };
 
-static permamote_packet_t packet = {
+static buckler_packet_t packet = {
     .id = NULL,
     .id_len = 0,
     .data = NULL,
@@ -81,9 +81,9 @@ typedef enum {
   SEND_PERIODIC,
   SEND_DISCOVERY,
   UPDATE_TIME,
-} permamote_state_t;
+} buckler_state_t;
 
-static permamote_state_t state = IDLE;
+static buckler_state_t state = IDLE;
 static float sensed_lux;
 static bool do_reset = false;
 
@@ -145,7 +145,7 @@ static inline void discover_send_callback() {
 
 static void tickle_or_nah(otError error) {
   if (error == OT_ERROR_NONE && otThreadGetDeviceRole(thread_get_instance()) == 2) {
-    ab1815_tickle_watchdog();
+    ab1815_tickle_watchdog(); //TODO: figure out what this is
   }
 }
 
@@ -164,7 +164,7 @@ static void send_free_buffers(void) {
   packet.timestamp = ab1815_get_time_unix();
   packet.data = (uint8_t*)&buf_info.mFreeBuffers;
   packet.data_len = sizeof(sizeof(uint16_t));
-  tickle_or_nah(permamote_coap_send(&m_peer_address, "free_ot_buffers", false, &packet));
+  tickle_or_nah(buckler_coap_send(&m_peer_address, "free_ot_buffers", false, &packet));
 }
 
 static void send_temp_pres_hum(void) {
@@ -180,9 +180,9 @@ static void send_temp_pres_hum(void) {
   packet.timestamp = ab1815_get_time_unix();
   packet.data = (uint8_t*)&temperature;
   // send and tickle if success
-  tickle_or_nah(permamote_coap_send(&m_peer_address, "temperature_c", false, &packet));
+  tickle_or_nah(buckler_coap_send(&m_peer_address, "temperature_c", false, &packet));
   packet.data = (uint8_t*)&pressure;
-  permamote_coap_send(&m_peer_address, "pressure_mbar", false, &packet);
+  buckler_coap_send(&m_peer_address, "pressure_mbar", false, &packet);
   NRF_LOG_INFO("Sensed ms5637: temperature: %d, pressure: %d", (int32_t)temperature, (int32_t)pressure);
 
   // sense humidity
@@ -195,7 +195,7 @@ static void send_temp_pres_hum(void) {
   packet.timestamp = ab1815_get_time_unix();
   packet.data = (uint8_t*)&humidity;
   // send and tickle if success
-  tickle_or_nah(permamote_coap_send(&m_peer_address, "humidity_percent", false, &packet));
+  tickle_or_nah(buckler_coap_send(&m_peer_address, "humidity_percent", false, &packet));
   NRF_LOG_INFO("Sensed si7021: humidity: %d", (int32_t)humidity);
 }
 
@@ -214,14 +214,14 @@ static void send_voltage(void) {
   packet.data = (uint8_t*)v_data;
   packet.data_len = 3 * sizeof(vbat);
   // send and tickle if success
-  tickle_or_nah(permamote_coap_send(&m_peer_address, "voltage", false, &packet));
+  tickle_or_nah(buckler_coap_send(&m_peer_address, "voltage", false, &packet));
   NRF_LOG_INFO("Sensed voltage: vbat*100: %d, vsol*100: %d, vsec*100: %d", (int32_t)(vbat*100), (int32_t)(vsol*100), (int32_t)(vsec*100));
 
   // sense vbat_ok
   bool vbat_ok = nrf_gpio_pin_read(VBAT_OK);
   packet.data = (uint8_t*)&vbat_ok;
   packet.data_len = sizeof(vbat_ok);
-  permamote_coap_send(&m_peer_address, "vbat_ok", false, &packet);
+  buckler_coap_send(&m_peer_address, "vbat_ok", false, &packet);
   NRF_LOG_INFO("VBAT_OK: %d", vbat_ok);
 }
 
@@ -242,12 +242,12 @@ static void send_color(void) {
   packet.data = (uint8_t*)&cct;
   packet.data_len = sizeof(cct);
   // send and tickle if success
-  tickle_or_nah(permamote_coap_send(&m_peer_address, "light_color_cct_k", false, &packet));
+  tickle_or_nah(buckler_coap_send(&m_peer_address, "light_color_cct_k", false, &packet));
 
   uint16_t lraw_data[4] = {red, green, blue, clear};
   packet.data = (uint8_t*)lraw_data;
   packet.data_len = 4*sizeof(red);
-  permamote_coap_send(&m_peer_address, "light_color_counts", false, &packet);
+  buckler_coap_send(&m_peer_address, "light_color_counts", false, &packet);
 
   NRF_LOG_INFO("Sensed light cct: %u", (uint32_t)cct);
   NRF_LOG_INFO("Sensed light color:\n\tr: %u\n\tg: %u\n\tb: %u", (uint16_t)red, (uint16_t)green, (uint16_t)blue);
@@ -413,6 +413,10 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info) {
   do_reset = true;
 }
 
+void send_test(void) {
+
+}
+
 void state_step(void) {
   switch(state) {
     case SEND_LIGHT:{
@@ -425,7 +429,7 @@ void state_step(void) {
       packet.timestamp = ab1815_get_time_unix();
       packet.data = (uint8_t*)&sensed_lux;
       packet.data_len = sizeof(sensed_lux);
-      tickle_or_nah(permamote_coap_send(&m_peer_address, "light_lux", true, &packet));
+      tickle_or_nah(buckler_coap_send(&m_peer_address, "light_lux", true, &packet));
 
       state = IDLE;
       break;
@@ -436,7 +440,7 @@ void state_step(void) {
       packet.timestamp = ab1815_get_time_unix();
       packet.data = &data;
       packet.data_len = sizeof(data);
-      tickle_or_nah(permamote_coap_send(&m_peer_address, "motion", true, &packet));
+      tickle_or_nah(buckler_coap_send(&m_peer_address, "motion", true, &packet));
 
       state = IDLE;
       break;
@@ -480,7 +484,7 @@ void state_step(void) {
       packet.data = data;
       packet.data_len = addr_len + 1;
 
-      tickle_or_nah(permamote_coap_send(&m_peer_address, "discovery", false, &packet));
+      tickle_or_nah(buckler_coap_send(&m_peer_address, "discovery", false, &packet));
 
       state = IDLE;
       break;
@@ -530,6 +534,7 @@ int main(void) {
   };
 
   // Turn on power gate
+  /*
   nrf_gpio_cfg_output(MAX44009_EN);
   nrf_gpio_cfg_output(TCS34725_EN);
   nrf_gpio_cfg_output(MS5637_EN);
@@ -539,12 +544,12 @@ int main(void) {
   nrf_gpio_pin_clear(PIR_EN);
   nrf_gpio_pin_set(TCS34725_EN);
   nrf_gpio_pin_set(MS5637_EN);
-  nrf_gpio_pin_set(SI7021_EN);
+  nrf_gpio_pin_set(SI7021_EN);*/ //i don't think we need this
 
-  nrf_gpio_cfg_output(LI2D_CS);
+  ////nrf_gpio_cfg_output(LI2D_CS); i don't think we need this either
   //nrf_gpio_cfg_output(SPI_MISO);
   //nrf_gpio_cfg_output(SPI_MOSI);
-  nrf_gpio_pin_set(LI2D_CS);
+  ////nrf_gpio_pin_set(LI2D_CS);
   //nrf_gpio_pin_set(SPI_MISO);
   //nrf_gpio_pin_set(SPI_MOSI);
 
@@ -553,7 +558,7 @@ int main(void) {
   thread_coap_client_init(thread_instance);
   thread_process();
 
-  // setup interrupt for pir
+  // setup interrupt for pir //TODO: what is pir
   if (!nrf_drv_gpiote_is_init()) {
     nrf_drv_gpiote_init();
   }
@@ -567,7 +572,7 @@ int main(void) {
   nrf_drv_gpiote_in_event_enable(PIR_OUT, 1);
 
   // setup vbat sense
-  nrf_gpio_cfg_input(VBAT_OK, NRF_GPIO_PIN_NOPULL);
+  ////nrf_gpio_cfg_input(VBAT_OK, NRF_GPIO_PIN_NOPULL);
 
   ab1815_init(&spi_instance);
   ab1815_control_t ab1815_config;
@@ -577,26 +582,26 @@ int main(void) {
 
 
   // setup light sensor
-  const max44009_config_t config = {
-    .continuous = 0,
-    .manual = 0,
-    .cdr = 0,
-    .int_time = 3,
-  };
+  // const max44009_config_t config = {
+  //   .continuous = 0,
+  //   .manual = 0,
+  //   .cdr = 0,
+  //   .int_time = 3,
+  // };
 
-  ms5637_init(&twi_mngr_instance, osr_8192);
+  // ms5637_init(&twi_mngr_instance, osr_8192);
 
-  si7021_init(&twi_mngr_instance);
+  // si7021_init(&twi_mngr_instance);
 
-  max44009_init(&twi_mngr_instance);
+  // max44009_init(&twi_mngr_instance);
 
-  tcs34725_init(&twi_mngr_instance);
+  // tcs34725_init(&twi_mngr_instance);
 
-  max44009_set_read_lux_callback(light_sensor_read_callback);
-  max44009_set_interrupt_callback(light_interrupt_callback);
-  max44009_config(config);
-  max44009_schedule_read_lux();
-  max44009_enable_interrupt();
+  // max44009_set_read_lux_callback(light_sensor_read_callback);
+  // max44009_set_interrupt_callback(light_interrupt_callback);
+  // max44009_config(config);
+  // max44009_schedule_read_lux();
+  // max44009_enable_interrupt();
 
   ab1815_time_t alarm_time = {0};
   ab1815_set_alarm(alarm_time, ONCE_PER_DAY, (ab1815_alarm_callback*) rtc_update_callback);
@@ -605,7 +610,7 @@ int main(void) {
   while (1) {
     thread_process();
     ntp_client_process(&ntp_client);
-    state_step();
+    send_test(); //TODO: this is where the stuff happens
     if (NRF_LOG_PROCESS() == false)
     {
       thread_sleep();
