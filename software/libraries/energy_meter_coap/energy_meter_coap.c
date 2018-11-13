@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "permamote_coap.h"
+#include "energy_meter_coap.h"
 
-otError permamote_coap_send(const otIp6Address* dest, const char* path, bool confirmable, const permamote_packet_t* packet) {
+otError buckler_coap_send(const otIp6Address* dest, const char* path, bool confirmable, const buckler_packet_t* packet) {
   uint64_t time_sec = packet->timestamp.tv_sec;
   uint32_t time_usec = packet->timestamp.tv_usec;
   static uint8_t data [256];
@@ -14,7 +14,7 @@ otError permamote_coap_send(const otIp6Address* dest, const char* path, bool con
   data[ptr++] = packet->id_len;
   memcpy(data+ptr, packet->id, packet->id_len);
   ptr += packet->id_len;
-  data[ptr++] = PERMAMOTE_PACKET_VERSION;
+  data[ptr++] = BUCKLER_PACKET_VERSION;
   memcpy(data+ptr, &time_sec, sizeof(time_sec));
   ptr += sizeof(time_sec);
   memcpy(data+ptr, &time_usec, sizeof(time_usec));
