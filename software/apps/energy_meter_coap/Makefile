@@ -1,3 +1,4 @@
+# nRF application makefile
 PROJECT_NAME = $(shell basename "$(realpath ./)")
 
 # Configurations
@@ -11,8 +12,11 @@ APP_HEADER_PATHS += .
 APP_SOURCE_PATHS += .
 APP_SOURCES = $(notdir $(wildcard ./*.c))
 
-NRF_BASE_DIR ?= ../../nrf5x-base
+# Path to base of nRF52-base repo
+NRF_BASE_DIR = ../../../buckler/software/nrf5x-base/
+
 # Include board Makefile (if any)
-include $(NRF_BASE_DIR)/../boards/permamote/Board.mk
+include ../../../buckler/software/boards/buckler_revA/Board.mk
+
 # Include main Makefile
 include $(NRF_BASE_DIR)/make/AppMakefile.mk
