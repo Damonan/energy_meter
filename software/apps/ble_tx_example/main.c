@@ -15,7 +15,7 @@ APP_TIMER_DEF(adv_timer);
 static simple_ble_config_t ble_config = {
         // BLE address is c0:98:e5:49:00:01
         .platform_id       = 0x49,    // used as 4th octet in device BLE address
-        .device_id         = 0x0001,  // used as the 5th and 6th octet in the device BLE address, you will need to change this for each device you have
+        .device_id         = 0x0003,  // used as the 5th and 6th octet in the device BLE address, you will need to change this for each device you have
         .adv_name          = "EE149", // irrelevant in this example
         .adv_interval      = MSEC_TO_UNITS(1000, UNIT_0_625_MS), // send a packet once per second (minimum is 20 ms)
         .min_conn_interval = MSEC_TO_UNITS(500, UNIT_1_25_MS), // irrelevant if advertising only
