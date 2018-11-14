@@ -76,15 +76,15 @@ static tcs34725_config_t tcs_config = {
 
 typedef enum {
   IDLE = 0,
-  SEND_LIGHT,
-  SEND_MOTION,
+  //SEND_LIGHT,
+  //SEND_MOTION,
   SEND_PERIODIC,
   SEND_DISCOVERY,
   UPDATE_TIME,
 } buckler_state_t;
 
 static buckler_state_t state = IDLE;
-static float sensed_lux;
+//static float sensed_lux;
 static bool do_reset = false;
 
 #define DISCOVER_PERIOD     APP_TIMER_TICKS(5*60*1000)
@@ -167,92 +167,6 @@ static void send_free_buffers(void) {
   tickle_or_nah(buckler_coap_send(&m_peer_address, "free_ot_buffers", false, &packet));
 }
 
-static void send_temp_pres_hum(void) {
-  float temperature, pressure, humidity;
-  packet.data_len = sizeof(temperature);
-
-  // sense temperature and pressure
-  nrf_gpio_pin_clear(MS5637_EN);
-  ms5637_start();
-  ms5637_get_temperature_and_pressure(&temperature, &pressure);
-  nrf_gpio_pin_set(MS5637_EN);
-  // Prepare temp and pressure packets
-  packet.timestamp = ab1815_get_time_unix();
-  packet.data = (uint8_t*)&temperature;
-  // send and tickle if success
-  tickle_or_nah(buckler_coap_send(&m_peer_address, "temperature_c", false, &packet));
-  packet.data = (uint8_t*)&pressure;
-  buckler_coap_send(&m_peer_address, "pressure_mbar", false, &packet);
-  NRF_LOG_INFO("Sensed ms5637: temperature: %d, pressure: %d", (int32_t)temperature, (int32_t)pressure);
-
-  // sense humidity
-  nrf_gpio_pin_clear(SI7021_EN);
-  nrf_delay_ms(20);
-  si7021_config(si7021_mode0);
-  si7021_read_RH_hold(&humidity);
-  nrf_gpio_pin_set(SI7021_EN);
-  // Prepare humidity packet
-  packet.timestamp = ab1815_get_time_unix();
-  packet.data = (uint8_t*)&humidity;
-  // send and tickle if success
-  tickle_or_nah(buckler_coap_send(&m_peer_address, "humidity_percent", false, &packet));
-  NRF_LOG_INFO("Sensed si7021: humidity: %d", (int32_t)humidity);
-}
-
-static void send_voltage(void) {
-  // sense voltage
-  nrf_saadc_value_t adc_samples[3];
-  nrf_drv_saadc_sample_convert(0, adc_samples);
-  nrf_drv_saadc_sample_convert(1, adc_samples+1);
-  nrf_drv_saadc_sample_convert(2, adc_samples+2);
-  float vbat = 0.6 * 6 * (float)adc_samples[0] / ((1 << 10)-1);
-  float vsol = 0.6 * 6 * (float)adc_samples[1] / ((1 << 10)-1);
-  float vsec = 0.6 * 6 * (float)adc_samples[2] / ((1 << 10)-1);
-  // prepare voltage packet
-  packet.timestamp = ab1815_get_time_unix();
-  float v_data[3] = {vbat, vsol, vsec};
-  packet.data = (uint8_t*)v_data;
-  packet.data_len = 3 * sizeof(vbat);
-  // send and tickle if success
-  tickle_or_nah(buckler_coap_send(&m_peer_address, "voltage", false, &packet));
-  NRF_LOG_INFO("Sensed voltage: vbat*100: %d, vsol*100: %d, vsec*100: %d", (int32_t)(vbat*100), (int32_t)(vsol*100), (int32_t)(vsec*100));
-
-  // sense vbat_ok
-  bool vbat_ok = nrf_gpio_pin_read(VBAT_OK);
-  packet.data = (uint8_t*)&vbat_ok;
-  packet.data_len = sizeof(vbat_ok);
-  buckler_coap_send(&m_peer_address, "vbat_ok", false, &packet);
-  NRF_LOG_INFO("VBAT_OK: %d", vbat_ok);
-}
-
-static void send_color(void) {
-  // sense light color
-  uint16_t red, green, blue, clear;
-  float cct;
-
-  nrf_gpio_pin_clear(TCS34725_EN);
-  nrf_delay_ms(3); //TODO make these delays low power
-  tcs34725_config(tcs_config);
-  tcs34725_enable();
-  nrf_delay_ms(160);
-  tcs34725_read_channels(&red, &green, &blue, &clear);
-  tcs34725_ir_compensate(&red, &green, &blue, &clear);
-  cct = tcs34725_calculate_cct(red, green, blue);
-  packet.timestamp = ab1815_get_time_unix();
-  packet.data = (uint8_t*)&cct;
-  packet.data_len = sizeof(cct);
-  // send and tickle if success
-  tickle_or_nah(buckler_coap_send(&m_peer_address, "light_color_cct_k", false, &packet));
-
-  uint16_t lraw_data[4] = {red, green, blue, clear};
-  packet.data = (uint8_t*)lraw_data;
-  packet.data_len = 4*sizeof(red);
-  buckler_coap_send(&m_peer_address, "light_color_counts", false, &packet);
-
-  NRF_LOG_INFO("Sensed light cct: %u", (uint32_t)cct);
-  NRF_LOG_INFO("Sensed light color:\n\tr: %u\n\tg: %u\n\tb: %u", (uint16_t)red, (uint16_t)green, (uint16_t)blue);
-  nrf_gpio_pin_set(TCS34725_EN);
-}
 
 static void periodic_sensor_read_callback() {
   ab1815_time_t time;
@@ -272,21 +186,20 @@ static inline void light_sensor_read_callback(float lux) {
   state = SEND_LIGHT;
 }
 
-static void pir_backoff_callback() {
-  nrf_drv_gpiote_in_event_enable(PIR_OUT, 1);
-}
+// static void pir_interrupt_callback(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
+//   nrf_drv_gpiote_in_event_disable(PIR_OUT);
+//   uint32_t err_code = app_timer_start(pir_backoff, PIR_BACKOFF_PERIOD, NULL);
+//   APP_ERROR_CHECK(err_code);
 
-static void pir_interrupt_callback(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
-  nrf_drv_gpiote_in_event_disable(PIR_OUT);
-  uint32_t err_code = app_timer_start(pir_backoff, PIR_BACKOFF_PERIOD, NULL);
-  APP_ERROR_CHECK(err_code);
+//   state = SEND_MOTION;
+// }
 
-  state = SEND_MOTION;
-}
 
+//This isn't necessary now, but the structure may be useful when interrupts are added back in later
+/*
 static void light_interrupt_callback(void) {
     max44009_schedule_read_lux();
-}
+}*/
 
 /**@brief Function for initializing the nrf log module.
  */
@@ -337,7 +250,7 @@ void twi_init(void) {
 void saadc_handler(nrf_drv_saadc_evt_t const * p_event) {
 }
 
-void adc_init(void) {
+void adc_init(void) { // TODO: figure out if this is necessary
   // set up voltage ADC
   nrf_saadc_channel_config_t primary_channel_config =
     NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN5);
@@ -413,11 +326,67 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info) {
   do_reset = true;
 }
 
-void send_test(void) {
+void state_step(void) {
+ 
+  switch(state) {
+    case SEND_PERIODIC: {
+      send_free_buffers(); // IDK if this is necessary, but the other SEND_PERIODIC
+      uint8_t data = 1;
+      NRF_LOG_INFO("Sending data");
+      packet.timestamp = ab1815_get_time_unix();
+      packet.data = &data;
+      packet.data_len = sizeof(data);
+      tickle_or_nah(buckler_coap_send(&m_peer_address, "data", true, &packet)); // TODO: figure out whether to do false (confirmable) since the periodic sends did
 
+      state = IDLE;
+      break;
+    }
+    case UPDATE_TIME: {
+      NRF_LOG_INFO("RTC UPDATE");
+      NRF_LOG_INFO("sent ntp poll!");
+      int error = ntp_client_begin(thread_get_instance(), &ntp_client, &m_ntp_address, 123, 127, ntp_recv_callback, NULL);
+      NRF_LOG_INFO("error: %d", error);
+      if (error) {
+        memset(&ntp_client, 0, sizeof(struct ntp_client_t));
+        otLinkSetPollPeriod(thread_get_instance(), DEFAULT_POLL_PERIOD);
+        return;
+      }
+      otLinkSetPollPeriod(thread_get_instance(), RECV_POLL_PERIOD);
+
+      state = IDLE;
+      break;
+    }
+    case SEND_DISCOVERY: {
+      const char* addr = PARSE_ADDR;
+      uint8_t addr_len = strlen(addr);
+      uint8_t data[addr_len + 1];
+
+      NRF_LOG_INFO("Sent discovery");
+
+      data[0] = addr_len;
+      memcpy(data+1, addr, addr_len);
+      packet.timestamp = ab1815_get_time_unix();
+      packet.data = data;
+      packet.data_len = addr_len + 1;
+
+      tickle_or_nah(buckler_coap_send(&m_peer_address, "discovery", false, &packet));
+
+      state = IDLE;
+      break;
+    }
+    default:
+      break;
+  }
+
+  if (do_reset) {
+    static volatile int i = 0;
+    if (i++ > 100) {
+      NVIC_SystemReset();
+    }
+  }
 }
 
-void state_step(void) {
+void state_step_original(void) {
   switch(state) {
     case SEND_LIGHT:{
       float upper = sensed_lux + sensed_lux * 0.05;
@@ -512,7 +481,7 @@ int main(void) {
 
   // Init twi
   twi_init();
-  adc_init();
+  adc_init(); // figure out if necessary
 
   // init periodic timers
   timer_init();
@@ -558,7 +527,8 @@ int main(void) {
   thread_coap_client_init(thread_instance);
   thread_process();
 
-  // setup interrupt for pir //TODO: what is pir
+  // setup interrupt for pir //TODO: what is pir; probably comment this stuff
+  /*
   if (!nrf_drv_gpiote_is_init()) {
     nrf_drv_gpiote_init();
   }
@@ -570,7 +540,7 @@ int main(void) {
   pir_gpio_config.pull = NRF_GPIO_PIN_PULLDOWN;
   nrf_drv_gpiote_in_init(PIR_OUT, &pir_gpio_config, pir_interrupt_callback);
   nrf_drv_gpiote_in_event_enable(PIR_OUT, 1);
-
+*/
   // setup vbat sense
   ////nrf_gpio_cfg_input(VBAT_OK, NRF_GPIO_PIN_NOPULL);
 
@@ -610,7 +580,7 @@ int main(void) {
   while (1) {
     thread_process();
     ntp_client_process(&ntp_client);
-    send_test(); //TODO: this is where the stuff happens
+    state_step(); //TODO: this is where the stuff happens
     if (NRF_LOG_PROCESS() == false)
     {
       thread_sleep();
