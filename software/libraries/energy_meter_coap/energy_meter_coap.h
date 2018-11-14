@@ -4,7 +4,7 @@
 #include "thread_coap.h"
 #include "app_error.h"
 
-#define PERMAMOTE_PACKET_VERSION 0
+#define BUCKLER_PACKET_VERSION 0
 
 typedef struct {
   char* path;
@@ -13,6 +13,6 @@ typedef struct {
   struct timeval timestamp;
   uint8_t* data;
   uint8_t data_len;
-} permamote_packet_t;
+} buckler_packet_t;
 
-otError permamote_coap_send(const otIp6Address* dest, const char* path, bool confirmable, const permamote_packet_t* packet);
+otError buckler_coap_send(const otIp6Address* dest, const char* path, bool confirmable, const buckler_packet_t* packet);
