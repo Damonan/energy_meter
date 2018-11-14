@@ -25,17 +25,18 @@
 #include "energy_meter_coap.h"
 #include "thread_coap.h"
 #include "device_id.h"
-#include "ntp.h" 
 
+//#include "ntp.h" 
 #include "buckler.h"
-#include "ab1815.h"
+//#include "ab1815.h"
+
 // #include "max44009.h"
 // #include "ms5637.h"
 // #include "si7021.h"
 // #include "tcs34725.h"
 
 #define COAP_SERVER_ADDR "64:ff9b::22da:2eb5"
-#define NTP_SERVER_ADDR "64:ff9b::8106:f1c"
+//#define NTP_SERVER_ADDR "64:ff9b::8106:f1c"
 #define PARSE_ADDR "j2x.us/perm"
 
 #define DEFAULT_CHILD_TIMEOUT    40   /**< Thread child timeout [s]. */
@@ -45,15 +46,15 @@
 
 static uint8_t device_id[6];
 static otNetifAddress m_slaac_addresses[6]; /**< Buffer containing addresses resolved by SLAAC */
-static struct ntp_client_t ntp_client;
+//static struct ntp_client_t ntp_client;
 
-static otIp6Address m_ntp_address =
+/*static otIp6Address m_ntp_address =
 {
     .mFields =
     {
         .m8 = {0}
     }
-};
+};*/
 static otIp6Address m_peer_address =
 {
     .mFields =
@@ -69,10 +70,10 @@ static buckler_packet_t packet = {
     .data_len = 0,
 };
 
-static tcs34725_config_t tcs_config = {
+/*static tcs34725_config_t tcs_config = {
   .int_time = TCS34725_INTEGRATIONTIME_154MS,
   .gain = TCS34725_GAIN_16X,
-};
+};*/ // was this important?
 
 typedef enum {
   IDLE = 0,
@@ -80,7 +81,7 @@ typedef enum {
   //SEND_MOTION,
   SEND_PERIODIC,
   SEND_DISCOVERY,
-  UPDATE_TIME,
+  //UPDATE_TIME,
 } buckler_state_t;
 
 static buckler_state_t state = IDLE;
@@ -89,18 +90,18 @@ static bool do_reset = false;
 
 #define DISCOVER_PERIOD     APP_TIMER_TICKS(5*60*1000)
 #define SENSOR_PERIOD       APP_TIMER_TICKS(30*1000)
-#define PIR_BACKOFF_PERIOD  APP_TIMER_TICKS(25*1000)
-#define RTC_UPDATE_FIRST    APP_TIMER_TICKS(5*1000)
+//#define PIR_BACKOFF_PERIOD  APP_TIMER_TICKS(25*1000)
+//#define RTC_UPDATE_FIRST    APP_TIMER_TICKS(5*1000)
 
 APP_TIMER_DEF(discover_send_timer);
 APP_TIMER_DEF(periodic_sensor_timer);
-APP_TIMER_DEF(pir_backoff);
-APP_TIMER_DEF(rtc_update_first);
+//APP_TIMER_DEF(pir_backoff);
+//APP_TIMER_DEF(rtc_update_first);
 
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
-static nrf_drv_spi_t spi_instance = NRF_DRV_SPI_INSTANCE(1);
+//static nrf_drv_spi_t spi_instance = NRF_DRV_SPI_INSTANCE(1);
 
-void ntp_recv_callback(struct ntp_client_t* client) {
+/*void ntp_recv_callback(struct ntp_client_t* client) {
   if (client->state == NTP_CLIENT_RECV) {
     ab1815_set_time(unix_to_ab1815(client->tv));
     NRF_LOG_INFO("ntp time: %lu.%lu", client->tv.tv_sec, client->tv.tv_usec);
@@ -109,11 +110,11 @@ void ntp_recv_callback(struct ntp_client_t* client) {
     NRF_LOG_INFO("ntp error state: 0x%x", client->state);
   }
   otLinkSetPollPeriod(thread_get_instance(), DEFAULT_POLL_PERIOD);
-}
+}*/
 
-static inline void rtc_update_callback() {
+/*static inline void rtc_update_callback() {
   state = UPDATE_TIME;
-}
+}*/
 
 void __attribute__((weak)) thread_state_changed_callback(uint32_t flags, void * p_context) {
     NRF_LOG_INFO("State changed! Flags: 0x%08lx Current role: %d",
@@ -134,8 +135,8 @@ void __attribute__((weak)) thread_state_changed_callback(uint32_t flags, void * 
     }
     if (flags & OT_CHANGED_IP6_ADDRESS_ADDED && otThreadGetDeviceRole(p_context) == 2) {
       NRF_LOG_INFO("We have internet connectivity!");
-      int err_code = app_timer_start(rtc_update_first, RTC_UPDATE_FIRST, NULL);
-      APP_ERROR_CHECK(err_code);
+      //int err_code = app_timer_start(rtc_update_first, RTC_UPDATE_FIRST, NULL); TODO: was this important?
+      //APP_ERROR_CHECK(err_code);
     }
 }
 
@@ -143,9 +144,10 @@ static inline void discover_send_callback() {
   state = SEND_DISCOVERY;
 }
 
+//so this is useless right now, but we don't want ab1815
 static void tickle_or_nah(otError error) {
   if (error == OT_ERROR_NONE && otThreadGetDeviceRole(thread_get_instance()) == 2) {
-    ab1815_tickle_watchdog(); //TODO: figure out what this is
+    //ab1815_tickle_watchdog(); //TODO: figure out what this is
   }
 }
 
@@ -161,7 +163,7 @@ static void send_free_buffers(void) {
   printf("coap messages: %u\n", buf_info.mCoapMessages);
   printf("app coap buffers: %u\n", buf_info.mApplicationCoapBuffers);
   printf("app coap messages: %u\n", buf_info.mApplicationCoapMessages);
-  packet.timestamp = ab1815_get_time_unix();
+  //packet.timestamp = ab1815_get_time_unix();
   packet.data = (uint8_t*)&buf_info.mFreeBuffers;
   packet.data_len = sizeof(sizeof(uint16_t));
   tickle_or_nah(buckler_coap_send(&m_peer_address, "free_ot_buffers", false, &packet));
@@ -169,22 +171,22 @@ static void send_free_buffers(void) {
 
 
 static void periodic_sensor_read_callback() {
-  ab1815_time_t time;
+  /*ab1815_time_t time;
   time = unix_to_ab1815(packet.timestamp);
   NRF_LOG_INFO("time: %d:%02d:%02d, %d/%d/20%02d", time.hours, time.minutes, time.seconds, time.months, time.date, time.years);
   if(time.years == 0) {
     NRF_LOG_INFO("VERY INVALID TIME");
     int err_code = app_timer_start(rtc_update_first, RTC_UPDATE_FIRST, NULL);
     APP_ERROR_CHECK(err_code);
-  }
-
+  }*/
+  //NRF_LOG_INFO("periodic"); This probably isn't actually necessary
   state = SEND_PERIODIC;
 }
 
-static inline void light_sensor_read_callback(float lux) {
+/*static inline void light_sensor_read_callback(float lux) {
   sensed_lux = lux;
   state = SEND_LIGHT;
-}
+}*/
 
 // static void pir_interrupt_callback(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
 //   nrf_drv_gpiote_in_event_disable(PIR_OUT);
@@ -226,11 +228,11 @@ static void timer_init(void)
   err_code = app_timer_start(periodic_sensor_timer, SENSOR_PERIOD, NULL);
   APP_ERROR_CHECK(err_code);
 
-  err_code = app_timer_create(&rtc_update_first, APP_TIMER_MODE_SINGLE_SHOT, rtc_update_callback);
-  APP_ERROR_CHECK(err_code);
+  //err_code = app_timer_create(&rtc_update_first, APP_TIMER_MODE_SINGLE_SHOT, rtc_update_callback);
+  //APP_ERROR_CHECK(err_code);
 
-  err_code = app_timer_create(&pir_backoff, APP_TIMER_MODE_SINGLE_SHOT, pir_backoff_callback);
-  APP_ERROR_CHECK(err_code);
+  //err_code = app_timer_create(&pir_backoff, APP_TIMER_MODE_SINGLE_SHOT, pir_backoff_callback);
+  //APP_ERROR_CHECK(err_code);
 }
 
 
@@ -333,7 +335,7 @@ void state_step(void) {
       send_free_buffers(); // IDK if this is necessary, but the other SEND_PERIODIC
       uint8_t data = 1;
       NRF_LOG_INFO("Sending data");
-      packet.timestamp = ab1815_get_time_unix();
+      //packet.timestamp = ab1815_get_time_unix();
       packet.data = &data;
       packet.data_len = sizeof(data);
       tickle_or_nah(buckler_coap_send(&m_peer_address, "data", true, &packet)); // TODO: figure out whether to do false (confirmable) since the periodic sends did
@@ -341,7 +343,7 @@ void state_step(void) {
       state = IDLE;
       break;
     }
-    case UPDATE_TIME: {
+    /*case UPDATE_TIME: {
       NRF_LOG_INFO("RTC UPDATE");
       NRF_LOG_INFO("sent ntp poll!");
       int error = ntp_client_begin(thread_get_instance(), &ntp_client, &m_ntp_address, 123, 127, ntp_recv_callback, NULL);
@@ -355,7 +357,7 @@ void state_step(void) {
 
       state = IDLE;
       break;
-    }
+    }*/
     case SEND_DISCOVERY: {
       const char* addr = PARSE_ADDR;
       uint8_t addr_len = strlen(addr);
@@ -365,7 +367,7 @@ void state_step(void) {
 
       data[0] = addr_len;
       memcpy(data+1, addr, addr_len);
-      packet.timestamp = ab1815_get_time_unix();
+      //packet.timestamp = ab1815_get_time_unix();
       packet.data = data;
       packet.data_len = addr_len + 1;
 
@@ -386,6 +388,7 @@ void state_step(void) {
   }
 }
 
+/*
 void state_step_original(void) {
   switch(state) {
     case SEND_LIGHT:{
@@ -468,7 +471,7 @@ void state_step_original(void) {
       NVIC_SystemReset();
     }
   }
-}
+}*/
 
 int main(void) {
   // init softdevice
@@ -492,7 +495,7 @@ int main(void) {
 
   // setup thread
   otIp6AddressFromString(COAP_SERVER_ADDR, &m_peer_address);
-  otIp6AddressFromString(NTP_SERVER_ADDR, &m_ntp_address);
+  ///otIp6AddressFromString(NTP_SERVER_ADDR, &m_ntp_address);
   thread_config_t thread_config = {
     .channel = 25,
     .panid = 0xFACE,
@@ -544,12 +547,15 @@ int main(void) {
   // setup vbat sense
   ////nrf_gpio_cfg_input(VBAT_OK, NRF_GPIO_PIN_NOPULL);
 
+
+
+/* RTC stuff, probably don't need
   ab1815_init(&spi_instance);
   ab1815_control_t ab1815_config;
   ab1815_get_config(&ab1815_config);
   ab1815_config.auto_rst = 1;
   ab1815_set_config(ab1815_config);
-
+*/
 
   // setup light sensor
   // const max44009_config_t config = {
@@ -573,13 +579,16 @@ int main(void) {
   // max44009_schedule_read_lux();
   // max44009_enable_interrupt();
 
+/* More RTC
   ab1815_time_t alarm_time = {0};
   ab1815_set_alarm(alarm_time, ONCE_PER_DAY, (ab1815_alarm_callback*) rtc_update_callback);
   ab1815_set_watchdog(1, 15, _1_4HZ);
+*/ 
+
 
   while (1) {
     thread_process();
-    ntp_client_process(&ntp_client);
+    //ntp_client_process(&ntp_client);
     state_step(); //TODO: this is where the stuff happens
     if (NRF_LOG_PROCESS() == false)
     {
