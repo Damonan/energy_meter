@@ -1,5 +1,0 @@
-r
-loadfile _build/grove_light_sdk15_blank.hex 
-r
-g
-exit
