@@ -23,8 +23,11 @@ static simple_ble_config_t ble_config = {
 };
 simple_ble_app_t* simple_ble_app;
 
-static uint8_t count_buff[4];
+// Number of 8bit ints in desired count size
 static uint8_t count_buff_len = 4;
+// Buffer to store uint32_t int count in an array of uint8_t
+static uint8_t count_buff[count_buff_len];
+// Variable for storing the count
 static uint32_t count;
 
 
@@ -56,6 +59,7 @@ void set_ble_payload(uint8_t* buffer, uint8_t length) {
   simple_ble_set_adv(&advdata, NULL);
 }
 
+// Converts a uint32_t into 4 uint8_t and places in count_buff
 void update_count_buffer(void) {
   count_buff[0] = (count >> 24) & 0xFF;
   count_buff[1] = (count >> 16) & 0xFF;
@@ -66,13 +70,14 @@ void update_count_buffer(void) {
 // Callback when the timer fires. Updates the advertisement data
 void adv_timer_callback(void) {
   // Update advertisement data
-  // Increments each value by one each time
+  // Increments each value by two each time
+  // This is just temporary until we get interrupts working on the sensor
   count += 2;
   update_count_buffer();
   set_ble_payload(count_buff, count_buff_len);
 }
 
-
+// Updates the advertisement payload
 void update_advertisement(void) {
 	count += 1;
   update_count_buffer();
