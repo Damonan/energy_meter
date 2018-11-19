@@ -29,22 +29,18 @@ static const uint8_t thresh0_high_addr = TSL2561_THRESH_LO_HI;
 static const uint8_t thresh1_low_addr = TSL2561_THRESH_HI_LO;
 static const uint8_t thresh1_high_addr = TSL2561_THRESH_HI_HI;
 
-//Various buffer for reading/write bytes to the corresponding register
+//READ BUFFERS
 static uint8_t ID_test_buf[1] = {0};
-static uint8_t power_buf[1] = {0x3};
-static uint8_t config_timing_buf[1] = {0};
-static uint8_t config_interrupt_buf[1] = {0};
-
-//Read data from our lux into these buffers
 static uint8_t read_lux0_buf[2] = {0};
 static uint8_t read_lux1_buf[2] = {0};
-
-//Read/write the threshold values
 static uint8_t read_thresh_buf[2] = {0};
-static uint8_t write_thresh_buf[2] = {0};
 
-//Write buffer for a test interrupt
-static uint8_t write_test_int[1] = {0};
+//WRITE BUFFERS
+static uint8_t power_buf[2] = {0x3};
+static uint8_t config_timing_buf[2] = {0};
+static uint8_t config_interrupt_buf[2] = {0};
+static uint8_t write_thresh_buf[3] = {0};
+static uint8_t write_test_int[2] = {0};
 
 //Local config settings to be used in calc_lux
 unsigned int iGain;
@@ -75,15 +71,14 @@ void read_data (uint8_t addr, uint8_t length,  uint8_t buf[]){
 
 //General I2C write data protocl to be used with the buffers above
 void write_data (uint8_t addr, uint8_t length, uint8_t buf[]){
-	uint8_t command;
 	if (length == 2){
-		command = (0xA0) | addr;
+		buf[0] = (0xA0) | addr;
 	} else {
-		command = (0x80) | addr;
+		buf[0] = (0x80) | addr;
 	}
+
 	nrf_twi_mngr_transfer_t transaction[] = {
-		NRF_TWI_MNGR_WRITE(TSL2561_ADDR, &command, 1, NRF_TWI_MNGR_NO_STOP),
-		NRF_TWI_MNGR_WRITE(TSL2561_ADDR, buf, length, 0)
+		NRF_TWI_MNGR_WRITE(TSL2561_ADDR, buf, length+1, 0)
 	};
 
 	int error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, transaction, sizeof(transaction)/sizeof(transaction[0]), NULL); 
@@ -170,14 +165,14 @@ void tsl2561_ID_transfer(void){
 
 //To control the power of the device, write a byte to the control register
 void tsl2561_power_on(bool on){
-	power_buf[0] = on ? 3 : 0;
+	power_buf[1] = on ? 3 : 0;
 	write_data(TSL2561_POWER, 1, power_buf);
 }
 
 //To configure the timing and interrupt options of our device
 void tsl2561_config(tsl2561_config_t config){
-	config_timing_buf[0] = (config.gain << 4) | (config.int_time & 0x3);
-	config_interrupt_buf[0] = (config.int_mode << 4) | (config.persist);
+	config_timing_buf[1] = (config.gain << 4) | (config.int_time & 0x3);
+	config_interrupt_buf[1] = (config.int_mode << 4) | (config.persist);
 	
 	tInt = config.int_time;
 	iGain = config.gain;
@@ -201,14 +196,14 @@ void tsl2561_clear_interrupt(void){
 
 //Write to the 16-bit thresholds by writing two bytes to the LO register without a stop condition in between
 void tsl2561_write_threshold_lower(unsigned int threshold){
-	write_thresh_buf[0] = threshold & 0xFF;
-	write_thresh_buf[1] = (threshold >> 8) & 0xFF;
+	write_thresh_buf[1] = threshold & 0xFF;
+	write_thresh_buf[2] = (threshold >> 8) & 0xFF;
 	write_data(TSL2561_THRESH_LO_LO, 2, write_thresh_buf);
 }
 
 void tsl2561_write_threshold_upper(unsigned int threshold){
-	write_thresh_buf[0] = threshold & 0xFF;
-	write_thresh_buf[1] = (threshold >> 8) & 0xFF;
+	write_thresh_buf[1] = threshold & 0xFF;
+	write_thresh_buf[2] = (threshold >> 8) & 0xFF;
 	write_data(TSL2561_THRESH_HI_LO, 2, write_thresh_buf);
 }
 
@@ -222,6 +217,7 @@ unsigned int tsl2561_read_threshold_lower(void){
 unsigned int tsl2561_read_threshold_upper(void){
 	read_data(TSL2561_THRESH_HI_LO, 2, read_thresh_buf);
 	unsigned int threshold = (read_thresh_buf[1] << 8) | read_thresh_buf[0];
+	//printf("read_thresh_buf[0]: %x, read_thresh_buf[1]: %x\n", read_thresh_buf[0], read_thresh_buf[1]);
 	return (threshold);
 }
 
@@ -230,6 +226,12 @@ unsigned int tsl2561_read_lux(void){
 	read_data(TSL2561_LUX0_LO, 2, read_lux0_buf);
 	read_data(TSL2561_LUX1_LO, 2, read_lux1_buf);	
 	return(calc_lux());
+}
+
+//Read lux raw values (just channel 0 for now)
+uint16_t tsl2561_read_lux_code(void){
+	read_data(TSL2561_LUX0_LO, 2, read_lux0_buf);
+	return((read_lux0_buf[1] << 8) | (read_lux0_buf[0]));
 }
 
 //Generate a test interrupt

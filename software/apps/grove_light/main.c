@@ -32,46 +32,45 @@ NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 //This function will be called when the tsl2561 is interrupted
 //For now, read the lux, update the thresholds accordingly and clear the interrupt.
 //TODO: Send out packets to the gateway
-static void interrupt_handler(){
-	unsigned int lux = tsl2561_read_lux();
-	upper = lux + lux*0.10;
-	lower = lux - lux*0.10;
+void interrupt_handler(){
+	nrf_drv_gpiote_out_toggle(14);
+	
+	unsigned int lux = tsl2561_read_lux_code();
+	/*upper = lux + 300;
+	lower = lux - 300;
 
 	tsl2561_write_threshold_upper(upper);
-	tsl2561_write_threshold_lower(lower);
+	tsl2561_write_threshold_lower(lower);*/
+	
+	//printf("LUX:%i\n", lux);
+	//printf("Upper: %i, Lower: %i\n", upper, lower);
+	//printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
 	
 	tsl2561_clear_interrupt();
 	
-	printf("Interrupt happened");
+	//printf("Interrupt happened\n");
 }
-
-/* Some thoughts on how to get an interrupt working
-void GPIOTE_INTERRUPT_CONFIG(int pin){
-	//Set pin as HiToLo event trigger
-	NRF_GPIOTE->CONFIG[0] = (2 << 16) | (pin << 8) | 1;
-	NRF_GPIOTE->INTENSET = 1;
-}
-
-void GPIO_LED_CONFIG(void){
-	NRF_GPIO->PIN_CNF[0] = 1;
-}
-
-void GPIOTE_IRQHandler(void){
-	NRF_GPIOTE->EVENTS_IN[0] = 0;
-	NRF_GPIOTE->TASKS_SET[0] = 1;
-	printf("Interrupt happened\n");
-}
-*/
 
 //Want to tell the nRF to trigger an interrupt when 'pin' transitions from high to low
 //The GPIO here should be whichever one the INT line of tsl2561 is wired to
 static void configure_interrupt(int pin, void *callback){
-	if (!nrf_drv_gpiote_is_init()){
-		nrf_drv_gpiote_init();
-	}
+	ret_code_t err_code;
+
+	err_code = nrf_drv_gpiote_init();
+	APP_ERROR_CHECK(err_code);
+	
+	nrf_drv_gpiote_out_config_t out_config= GPIOTE_CONFIG_OUT_SIMPLE(true);
+
+	err_code = nrf_drv_gpiote_out_init(14, &out_config);
+	APP_ERROR_CHECK(err_code);
+
 	nrf_drv_gpiote_in_config_t int_gpio_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(0);
-	int error = nrf_drv_gpiote_in_init(pin, &int_gpio_config, callback);
-	APP_ERROR_CHECK(error);
+	int_gpio_config.pull = NRF_GPIO_PIN_PULLUP;
+
+	err_code = nrf_drv_gpiote_in_init(24, &int_gpio_config, interrupt_handler);
+	APP_ERROR_CHECK(err_code);
+
+	nrf_drv_gpiote_in_event_enable(24, 1);
 }
 
 //This will initialize our twi struct
@@ -110,38 +109,29 @@ int main(void){
 	const tsl2561_config_t config = {
 		.gain =  0,
 		.int_time = 2,
-		.int_mode = 3, //set to test mode (revert to 1 for proper operation mode)
-		.persist = 10,
+		.int_mode = 1, //set to test mode (revert to 1 for proper operation mode)
+		.persist = 2,
 	};
 
 	tsl2561_config(config);
 	
-	//configure_interrupt(13, interrupt_handler);
-
-	/*From interrupts example
-	ret_code_t error_code = NRF_SUCCESS;
-
-	error_code = NRF_LOG_INIT(NULL);
-	APP_ERROR_CHECK(error_code);
-	NRF_LOG_DEFAULT_BACKENDS_INIT();
-	printf("Log initialized!\n");
-
-	GPIOTE_INTERRUPT_CONFIG(23);
-	GPIO_LED_CONFIG();
-	*/
-
-	tsl2561_write_threshold_upper(10000);
+	tsl2561_write_threshold_upper(1000);
 	tsl2561_write_threshold_lower(0);
-
+	
 	printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
 
+	configure_interrupt(BUCKLER_BUTTON0, interrupt_handler);
+
 	while(1){
-		printf("Lux Value: %i\n", tsl2561_read_lux());
-		tsl2561_generate_interrupt();
+		__WFI();
+		printf("INTERRUPT HAPPENED!");
+		//nrf_drv_gpiote_out_toggle(14);
+		//printf("Lux Value: %i\n", tsl2561_read_lux());
+		//printf("Lux Code: %i\n", tsl2561_read_lux_code());
+		//printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
+		//tsl2561_generate_interrupt();
 		//printf("interrupt low\n");
 		//printf("Looping\n");
-		nrf_delay_ms(2500);
-		tsl2561_clear_interrupt();
 		//printf("interrupt high\n");
 		//nrf_delay_ms(2500);
 	}

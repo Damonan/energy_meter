@@ -1,6 +1,6 @@
 *target/
 *build/
-*_build/
+*_build/*
 .gdbinit
 *.swp
 *.DS_Store

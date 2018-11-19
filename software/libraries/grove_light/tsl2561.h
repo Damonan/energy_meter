@@ -6,7 +6,7 @@
 
 #include "nrf_twi_mngr.h"
 
-#define TSL2561_ADDR       	0x29
+#define TSL2561_ADDR       	0x39
 #define TSL2561_CLEAR_INT	0xc0
 #define TSL2561_POWER		0x00
 #define TSL2561_TIMING	   	0x01
