@@ -113,4 +113,4 @@ _build/main.o: main.c /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
  ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_gpio.h \
  /home/student/energy_meter/software/buckler/software/boards/buckler_revA/./buckler.h \
  ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_saadc.h \
- ../../libraries/grove_light/tsl2561.h
+ /usr/arm-none-eabi/include/math.h ../../libraries/grove_light/tsl2561.h

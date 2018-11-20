@@ -229,9 +229,14 @@ unsigned int tsl2561_read_lux(void){
 }
 
 //Read lux raw values (just channel 0 for now)
-uint16_t tsl2561_read_lux_code(void){
+uint16_t tsl2561_read_lux_code0(void){
 	read_data(TSL2561_LUX0_LO, 2, read_lux0_buf);
 	return((read_lux0_buf[1] << 8) | (read_lux0_buf[0]));
+}
+
+uint16_t tsl2561_read_lux_code1(void){
+	read_data(TSL2561_LUX1_LO, 2, read_lux1_buf);
+	return((read_lux1_buf[1] << 8) | (read_lux1_buf[0]));
 }
 
 //Generate a test interrupt

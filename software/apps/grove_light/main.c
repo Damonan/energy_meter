@@ -17,6 +17,7 @@
 #include "nrf.h"
 #include "app_error.h"
 #include "buckler.h"
+#include "math.h"
 
 #include "../../libraries/grove_light/tsl2561.h"
 
@@ -24,6 +25,8 @@
 bool update_thresh = false;
 unsigned int upper;
 unsigned int lower;
+
+unsigned int global_count;
 
 //Macro for defining a TWI instance
 //Param 1: instance name; Param 2: queue size; Param 3: index
@@ -34,21 +37,33 @@ NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 //TODO: Send out packets to the gateway
 void interrupt_handler(){
 	nrf_drv_gpiote_out_toggle(14);
+	//printf("INTERRUPT HAPPENED!");
+	//printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
+	//printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
+	unsigned int lux0_int = tsl2561_read_lux_code0();
+	unsigned int lux1_int = tsl2561_read_lux_code1();
+	nrf_delay_ms(1500);
+	unsigned int lux0_reg = tsl2561_read_lux_code0();
+	unsigned int lux1_reg = tsl2561_read_lux_code1();
+	double ratio = ((double) abs(lux0_reg - lux0_int)) / ((double) abs(lux1_reg - lux1_int));
 	
-	unsigned int lux = tsl2561_read_lux_code();
-	/*upper = lux + 300;
-	lower = lux - 300;
+	upper = lux0_reg + 100;
+	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 100;
 
 	tsl2561_write_threshold_upper(upper);
-	tsl2561_write_threshold_lower(lower);*/
-	
-	//printf("LUX:%i\n", lux);
-	//printf("Upper: %i, Lower: %i\n", upper, lower);
-	//printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
+	tsl2561_write_threshold_lower(lower);
 	
 	tsl2561_clear_interrupt();
 	
-	//printf("Interrupt happened\n");
+	if (ratio <= 2) {
+		//printf("FALSE POSITIVE!\n");
+		global_count++;
+		printf("ACTUAL BLINK! Count: %i\n", global_count);
+	//} else {
+	}
+
+	//printf("New Upper: %i, New Lower: %i\n", upper, lower);
+	//printf("Ratio: %f\n", ratio);
 }
 
 //Want to tell the nRF to trigger an interrupt when 'pin' transitions from high to low
@@ -107,15 +122,15 @@ int main(void){
 	tsl2561_power_on(1);
 
 	const tsl2561_config_t config = {
-		.gain =  0,
+		.gain =  1,
 		.int_time = 2,
 		.int_mode = 1, //set to test mode (revert to 1 for proper operation mode)
-		.persist = 2,
+		.persist = 1,
 	};
 
 	tsl2561_config(config);
 	
-	tsl2561_write_threshold_upper(1000);
+	tsl2561_write_threshold_upper(100);
 	tsl2561_write_threshold_lower(0);
 	
 	printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
@@ -124,15 +139,15 @@ int main(void){
 
 	while(1){
 		__WFI();
-		printf("INTERRUPT HAPPENED!");
 		//nrf_drv_gpiote_out_toggle(14);
 		//printf("Lux Value: %i\n", tsl2561_read_lux());
-		//printf("Lux Code: %i\n", tsl2561_read_lux_code());
+		//printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
+		//printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
 		//printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
 		//tsl2561_generate_interrupt();
 		//printf("interrupt low\n");
 		//printf("Looping\n");
 		//printf("interrupt high\n");
-		//nrf_delay_ms(2500);
+		//nrf_delay_ms(1000);
 	}
 }
