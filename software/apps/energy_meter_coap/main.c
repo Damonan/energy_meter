@@ -31,9 +31,7 @@
 //#include "ab1815.h"
 
 // #include "max44009.h"
-// #include "ms5637.h"
-// #include "si7021.h"
-// #include "tcs34725.h"
+
 
 #define COAP_SERVER_ADDR "64:ff9b::22da:2eb5"
 //#define NTP_SERVER_ADDR "64:ff9b::8106:f1c"
@@ -70,11 +68,6 @@ static buckler_packet_t packet = {
     .data_len = 0,
 };
 
-/*static tcs34725_config_t tcs_config = {
-  .int_time = TCS34725_INTEGRATIONTIME_154MS,
-  .gain = TCS34725_GAIN_16X,
-};*/ // was this important?
-
 typedef enum {
   IDLE = 0,
   //SEND_LIGHT,
@@ -90,15 +83,13 @@ static bool do_reset = false;
 
 #define DISCOVER_PERIOD     APP_TIMER_TICKS(5*60*1000)
 #define SENSOR_PERIOD       APP_TIMER_TICKS(30*1000)
-//#define PIR_BACKOFF_PERIOD  APP_TIMER_TICKS(25*1000)
 //#define RTC_UPDATE_FIRST    APP_TIMER_TICKS(5*1000)
 
 APP_TIMER_DEF(discover_send_timer);
 APP_TIMER_DEF(periodic_sensor_timer);
-//APP_TIMER_DEF(pir_backoff);
 //APP_TIMER_DEF(rtc_update_first);
 
-NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
+//NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0); will need for light sensor
 //static nrf_drv_spi_t spi_instance = NRF_DRV_SPI_INSTANCE(1);
 
 /*void ntp_recv_callback(struct ntp_client_t* client) {
@@ -188,14 +179,6 @@ static void periodic_sensor_read_callback() {
   state = SEND_LIGHT;
 }*/
 
-// static void pir_interrupt_callback(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
-//   nrf_drv_gpiote_in_event_disable(PIR_OUT);
-//   uint32_t err_code = app_timer_start(pir_backoff, PIR_BACKOFF_PERIOD, NULL);
-//   APP_ERROR_CHECK(err_code);
-
-//   state = SEND_MOTION;
-// }
-
 
 //This isn't necessary now, but the structure may be useful when interrupts are added back in later
 /*
@@ -231,11 +214,9 @@ static void timer_init(void)
   //err_code = app_timer_create(&rtc_update_first, APP_TIMER_MODE_SINGLE_SHOT, rtc_update_callback);
   //APP_ERROR_CHECK(err_code);
 
-  //err_code = app_timer_create(&pir_backoff, APP_TIMER_MODE_SINGLE_SHOT, pir_backoff_callback);
-  //APP_ERROR_CHECK(err_code);
 }
 
-
+/*
 void twi_init(void) {
   ret_code_t err_code;
 
@@ -247,30 +228,8 @@ void twi_init(void) {
 
   err_code = nrf_twi_mngr_init(&twi_mngr_instance, &twi_config);
   APP_ERROR_CHECK(err_code);
-}
+}*/
 
-void saadc_handler(nrf_drv_saadc_evt_t const * p_event) {
-}
-
-void adc_init(void) { // TODO: figure out if this is necessary
-  // set up voltage ADC
-  nrf_saadc_channel_config_t primary_channel_config =
-    NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN5);
-  primary_channel_config.burst = NRF_SAADC_BURST_ENABLED;
-
-  nrf_saadc_channel_config_t solar_channel_config =
-    NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN6);
-
-  nrf_saadc_channel_config_t secondary_channel_config =
-    NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN7);
-
-  nrf_drv_saadc_init(NULL, saadc_handler);
-
-  nrf_drv_saadc_channel_init(0, &primary_channel_config);
-  nrf_drv_saadc_channel_init(1, &solar_channel_config);
-  nrf_drv_saadc_channel_init(2, &secondary_channel_config);
-  nrf_drv_saadc_calibrate_offset();
-}
 
 //void app_error_fault_handler(uint32_t error_code, __attribute__ ((unused)) uint32_t line_num, __attribute__ ((unused)) uint32_t info) {
 //  NRF_LOG_INFO("App error: %d", error_code);
@@ -388,103 +347,18 @@ void state_step(void) {
   }
 }
 
-/*
-void state_step_original(void) {
-  switch(state) {
-    case SEND_LIGHT:{
-      float upper = sensed_lux + sensed_lux * 0.05;
-      float lower = sensed_lux - sensed_lux * 0.05;
-      NRF_LOG_INFO("Sensed: lux: %u, upper: %u, lower: %u", (uint32_t)sensed_lux, (uint32_t)upper, (uint32_t)lower);
-      max44009_set_upper_threshold(upper);
-      max44009_set_lower_threshold(lower);
-
-      packet.timestamp = ab1815_get_time_unix();
-      packet.data = (uint8_t*)&sensed_lux;
-      packet.data_len = sizeof(sensed_lux);
-      tickle_or_nah(buckler_coap_send(&m_peer_address, "light_lux", true, &packet));
-
-      state = IDLE;
-      break;
-    }
-    case SEND_MOTION: {
-      uint8_t data = 1;
-      NRF_LOG_INFO("Saw motion");
-      packet.timestamp = ab1815_get_time_unix();
-      packet.data = &data;
-      packet.data_len = sizeof(data);
-      tickle_or_nah(buckler_coap_send(&m_peer_address, "motion", true, &packet));
-
-      state = IDLE;
-      break;
-    }
-    case SEND_PERIODIC: {
-      send_free_buffers();
-      send_temp_pres_hum();
-      send_voltage();
-      send_color();
-
-      state = IDLE;
-
-      max44009_schedule_read_lux();
-      break;
-    }
-    case UPDATE_TIME: {
-      NRF_LOG_INFO("RTC UPDATE");
-      NRF_LOG_INFO("sent ntp poll!");
-      int error = ntp_client_begin(thread_get_instance(), &ntp_client, &m_ntp_address, 123, 127, ntp_recv_callback, NULL);
-      NRF_LOG_INFO("error: %d", error);
-      if (error) {
-        memset(&ntp_client, 0, sizeof(struct ntp_client_t));
-        otLinkSetPollPeriod(thread_get_instance(), DEFAULT_POLL_PERIOD);
-        return;
-      }
-      otLinkSetPollPeriod(thread_get_instance(), RECV_POLL_PERIOD);
-
-      state = IDLE;
-      break;
-    }
-    case SEND_DISCOVERY: {
-      const char* addr = PARSE_ADDR;
-      uint8_t addr_len = strlen(addr);
-      uint8_t data[addr_len + 1];
-
-      NRF_LOG_INFO("Sent discovery");
-
-      data[0] = addr_len;
-      memcpy(data+1, addr, addr_len);
-      packet.timestamp = ab1815_get_time_unix();
-      packet.data = data;
-      packet.data_len = addr_len + 1;
-
-      tickle_or_nah(buckler_coap_send(&m_peer_address, "discovery", false, &packet));
-
-      state = IDLE;
-      break;
-    }
-    default:
-      break;
-  }
-
-  if (do_reset) {
-    static volatile int i = 0;
-    if (i++ > 100) {
-      NVIC_SystemReset();
-    }
-  }
-}*/
-
 int main(void) {
   // init softdevice
   //nrf_sdh_enable_request();
   //sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
-  nrf_power_dcdcen_set(1);
+  nrf_power_dcdcen_set(1); // not sure what this is
 
   // Init log
   log_init();
 
   // Init twi
-  twi_init();
-  adc_init(); // figure out if necessary
+  //twi_init(); will need for light sensor later
+  //adc_init(); // figure out if necessary
 
   // init periodic timers
   timer_init();
@@ -505,20 +379,8 @@ int main(void) {
     .autocommission = true,
   };
 
-  // Turn on power gate
-  /*
-  nrf_gpio_cfg_output(MAX44009_EN);
-  nrf_gpio_cfg_output(TCS34725_EN);
-  nrf_gpio_cfg_output(MS5637_EN);
-  nrf_gpio_cfg_output(SI7021_EN);
-  nrf_gpio_cfg_output(PIR_EN);
-  nrf_gpio_pin_clear(MAX44009_EN);
-  nrf_gpio_pin_clear(PIR_EN);
-  nrf_gpio_pin_set(TCS34725_EN);
-  nrf_gpio_pin_set(MS5637_EN);
-  nrf_gpio_pin_set(SI7021_EN);*/ //i don't think we need this
 
-  ////nrf_gpio_cfg_output(LI2D_CS); i don't think we need this either
+  ////nrf_gpio_cfg_output(LI2D_CS); i don't think we need this
   //nrf_gpio_cfg_output(SPI_MISO);
   //nrf_gpio_cfg_output(SPI_MOSI);
   ////nrf_gpio_pin_set(LI2D_CS);
@@ -530,24 +392,6 @@ int main(void) {
   thread_coap_client_init(thread_instance);
   thread_process();
 
-  // setup interrupt for pir //TODO: what is pir; probably comment this stuff
-  /*
-  if (!nrf_drv_gpiote_is_init()) {
-    nrf_drv_gpiote_init();
-  }
-
-  if (!nrf_drv_gpiote_is_init()) {
-    nrf_drv_gpiote_init();
-  }
-  nrf_drv_gpiote_in_config_t pir_gpio_config = GPIOTE_CONFIG_IN_SENSE_LOTOHI(1);
-  pir_gpio_config.pull = NRF_GPIO_PIN_PULLDOWN;
-  nrf_drv_gpiote_in_init(PIR_OUT, &pir_gpio_config, pir_interrupt_callback);
-  nrf_drv_gpiote_in_event_enable(PIR_OUT, 1);
-*/
-  // setup vbat sense
-  ////nrf_gpio_cfg_input(VBAT_OK, NRF_GPIO_PIN_NOPULL);
-
-
 
 /* RTC stuff, probably don't need
   ab1815_init(&spi_instance);
@@ -556,7 +400,6 @@ int main(void) {
   ab1815_config.auto_rst = 1;
   ab1815_set_config(ab1815_config);
 */
-
   // setup light sensor
   // const max44009_config_t config = {
   //   .continuous = 0,
@@ -565,13 +408,6 @@ int main(void) {
   //   .int_time = 3,
   // };
 
-  // ms5637_init(&twi_mngr_instance, osr_8192);
-
-  // si7021_init(&twi_mngr_instance);
-
-  // max44009_init(&twi_mngr_instance);
-
-  // tcs34725_init(&twi_mngr_instance);
 
   // max44009_set_read_lux_callback(light_sensor_read_callback);
   // max44009_set_interrupt_callback(light_interrupt_callback);
@@ -589,7 +425,7 @@ int main(void) {
   while (1) {
     thread_process();
     //ntp_client_process(&ntp_client);
-    state_step(); //TODO: this is where the stuff happens
+    state_step(); 
     if (NRF_LOG_PROCESS() == false)
     {
       thread_sleep();
