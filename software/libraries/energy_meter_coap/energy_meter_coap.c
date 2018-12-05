@@ -2,8 +2,13 @@
 #include <string.h>
 
 #include "energy_meter_coap.h"
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+//#include "simple_thread.h"
+//#include "thread_coap.h"
 
-otError buckler_coap_send(const otIp6Address* dest, const char* path, bool confirmable, const buckler_packet_t* packet) {
+otError coap_send(const otIp6Address* dest, const char* path, bool confirmable, const buckler_packet_t* packet) {
   uint64_t time_sec = packet->timestamp.tv_sec;
   uint32_t time_usec = packet->timestamp.tv_usec;
   static uint8_t data [256];
@@ -23,6 +28,6 @@ otError buckler_coap_send(const otIp6Address* dest, const char* path, bool confi
   ptr += packet->data_len;
 
   otCoapType coap_type = confirmable ? OT_COAP_TYPE_CONFIRMABLE : OT_COAP_TYPE_NON_CONFIRMABLE;
-
+  //NRF_LOG_INFO("In coap_send");
   return thread_coap_send(thread_get_instance(), OT_COAP_CODE_PUT, coap_type, dest, path, data, ptr);
 }

@@ -15,4 +15,4 @@ typedef struct {
   uint8_t data_len;
 } buckler_packet_t;
 
-otError buckler_coap_send(const otIp6Address* dest, const char* path, bool confirmable, const buckler_packet_t* packet);
+otError coap_send(const otIp6Address* dest, const char* path, bool confirmable, const buckler_packet_t* packet);

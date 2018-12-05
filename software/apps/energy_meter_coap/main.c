@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "simple_thread.h"
+#include "thread_coap.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
 #include "nrf_delay.h"
@@ -21,9 +23,9 @@
 #include <openthread/openthread.h>
 #include <openthread/message.h>
 
-#include "simple_thread.h"
+
 #include "energy_meter_coap.h"
-#include "thread_coap.h"
+
 #include "device_id.h"
 
 //#include "ntp.h" 
@@ -33,7 +35,10 @@
 // #include "max44009.h"
 
 
-#define COAP_SERVER_ADDR "64:ff9b::22da:2eb5"
+
+
+
+#define COAP_SERVER_ADDR "64:ff9b::22da:2eb5" //TODO: change this
 //#define NTP_SERVER_ADDR "64:ff9b::8106:f1c"
 #define PARSE_ADDR "j2x.us/perm"
 
@@ -157,7 +162,7 @@ static void send_free_buffers(void) {
   //packet.timestamp = ab1815_get_time_unix();
   packet.data = (uint8_t*)&buf_info.mFreeBuffers;
   packet.data_len = sizeof(sizeof(uint16_t));
-  tickle_or_nah(buckler_coap_send(&m_peer_address, "free_ot_buffers", false, &packet));
+  tickle_or_nah(coap_send(&m_peer_address, "free_ot_buffers", false, &packet));
 }
 
 
@@ -242,7 +247,7 @@ void twi_init(void) {
 //
 //  do_reset = true;
 //}
-
+/*
 void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info) {
   // halt all existing state
   __disable_irq();
@@ -285,20 +290,22 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info) {
   //thread_coap_send(thread_get_instance(), OT_COAP_CODE_PUT, OT_COAP_TYPE_NON_CONFIRMABLE, &m_peer_address, "error", data, 1+6+sizeof(uint32_t));
 
   do_reset = true;
-}
+}*/ //permamote has this function, but a version is in a buckler library already, it won't compile with this uncommented
 
 void state_step(void) {
  
   switch(state) {
     case SEND_PERIODIC: {
+      printf("beginning of send_periodic\n");
       send_free_buffers(); // IDK if this is necessary, but the other SEND_PERIODIC
       uint8_t data = 1;
-      NRF_LOG_INFO("Sending data");
+      
+      
       //packet.timestamp = ab1815_get_time_unix();
       packet.data = &data;
       packet.data_len = sizeof(data);
-      tickle_or_nah(buckler_coap_send(&m_peer_address, "data", true, &packet)); // TODO: figure out whether to do false (confirmable) since the periodic sends did
-
+      tickle_or_nah(coap_send(&m_peer_address, "data", true, &packet)); // TODO: figure out whether to do false (confirmable) since the periodic sends did
+      NRF_LOG_INFO("Sending data");
       state = IDLE;
       break;
     }
@@ -330,7 +337,7 @@ void state_step(void) {
       packet.data = data;
       packet.data_len = addr_len + 1;
 
-      tickle_or_nah(buckler_coap_send(&m_peer_address, "discovery", false, &packet));
+      tickle_or_nah(coap_send(&m_peer_address, "discovery", false, &packet));
 
       state = IDLE;
       break;
@@ -352,6 +359,7 @@ int main(void) {
   //nrf_sdh_enable_request();
   //sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
   nrf_power_dcdcen_set(1); // not sure what this is
+
 
   // Init log
   log_init();
@@ -391,7 +399,6 @@ int main(void) {
   otInstance* thread_instance = thread_get_instance();
   thread_coap_client_init(thread_instance);
   thread_process();
-
 
 /* RTC stuff, probably don't need
   ab1815_init(&spi_instance);
