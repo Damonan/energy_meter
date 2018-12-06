@@ -99,6 +99,7 @@ void twi_init(void){
 		.scl		= BUCKLER_SENSORS_SCL,
 		.sda		= BUCKLER_SENSORS_SDA,
 		.frequency 	= NRF_TWI_FREQ_400K,
+    .interrupt_priority = 2,
 	};
 	
 	//Initialize the instance and error if it is not initialized properly:

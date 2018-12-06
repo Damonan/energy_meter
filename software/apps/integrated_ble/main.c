@@ -1,16 +1,128 @@
-// BLE TX app
-//
-// Sends BLE advertisements with data
-
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+
+#include "nrf_gpio.h"
+#include "nrf_delay.h"
+#include "nrf_twi_mngr.h"
+#include "app_util_platform.h"
+#include "nordic_common.h"
+#include "app_timer.h"
+#include "nrf_drv_clock.h"
+#include "nrf_power.h"
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+#include "nrf_drv_gpiote.h"
 #include "nrf.h"
+#include "app_error.h"
+#include "buckler.h"
+#include "math.h"
 #include "app_util.h"
 #include "simple_ble.h"
 
+#include "../../libraries/grove_light/tsl2561.h"
 
+//Variables to maintain thresholds
+bool update_thresh = false;
+unsigned int upper;
+unsigned int lower;
+
+//Global Count
+static uint32_t count;
+
+#define num_cbf 4
+static uint8_t count_buff_len = 4;
+// Buffer to store uint32_t int count in an array of uint8_t
+static uint8_t count_buff[num_cbf];
+// Variable for storing the count
+
+
+//Macro for defining a TWI instance
+//Param 1: instance name; Param 2: queue size; Param 3: index
+NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
+
+//This function will be called when the tsl2561 is interrupted
+//For now, read the lux, update the thresholds accordingly and clear the interrupt.
+//TODO: Send out packets to the gateway
+void interrupt_handler(){
+	nrf_drv_gpiote_out_toggle(14);
+	//printf("INTERRUPT HAPPENED!");
+	//printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
+	//printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
+	unsigned int lux0_int = tsl2561_read_lux_code0();
+	unsigned int lux1_int = tsl2561_read_lux_code1();
+	nrf_delay_ms(1500);
+	unsigned int lux0_reg = tsl2561_read_lux_code0();
+	unsigned int lux1_reg = tsl2561_read_lux_code1();
+	double ratio = ((double) abs(lux0_reg - lux0_int)) / ((double) abs(lux1_reg - lux1_int));
+	
+	upper = lux0_reg + 100;
+	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 100;
+
+	tsl2561_write_threshold_upper(upper);
+	tsl2561_write_threshold_lower(lower);
+	
+	tsl2561_clear_interrupt();
+	
+	if (ratio <= 2) {
+		//printf("FALSE POSITIVE!\n");
+		count++;
+    update_advertisement();
+		printf("ACTUAL BLINK! Count: %i\n", count);
+	//} else {
+	}
+
+	//printf("New Upper: %i, New Lower: %i\n", upper, lower);
+	//printf("Ratio: %f\n", ratio);
+}
+
+//Want to tell the nRF to trigger an interrupt when 'pin' transitions from high to low
+//The GPIO here should be whichever one the INT line of tsl2561 is wired to
+static void configure_interrupt(int pin, void *callback){
+	ret_code_t err_code;
+
+	err_code = nrf_drv_gpiote_init();
+	APP_ERROR_CHECK(err_code);
+	
+	nrf_drv_gpiote_out_config_t out_config= GPIOTE_CONFIG_OUT_SIMPLE(true);
+
+	err_code = nrf_drv_gpiote_out_init(14, &out_config);
+	APP_ERROR_CHECK(err_code);
+
+	nrf_drv_gpiote_in_config_t int_gpio_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(0);
+	int_gpio_config.pull = NRF_GPIO_PIN_PULLUP;
+
+	err_code = nrf_drv_gpiote_in_init(24, &int_gpio_config, interrupt_handler);
+	APP_ERROR_CHECK(err_code);
+
+	nrf_drv_gpiote_in_event_enable(24, 1);
+}
+
+//This will initialize our twi struct
+//For now this is from the sample. I don't know where I2C_SCL,etc. are defined yet
+//SCL: Clock line for I2C
+//SDA: Data line for I2C
+void twi_init(void){
+	ret_code_t err_code;	
+
+	const nrf_drv_twi_config_t twi_config = {
+		.scl		= BUCKLER_SENSORS_SCL,
+		.sda		= BUCKLER_SENSORS_SDA,
+		.frequency 	= NRF_TWI_FREQ_400K,
+    .interrupt_priority = 2,
+	};
+	
+	//Initialize the instance and error if it is not initialized properly:
+	//Param 1 points at the instance we made with "NRF_TWI..." above
+	//Param 2 points at our driver configuration right above
+	err_code = nrf_twi_mngr_init(&twi_mngr_instance, &twi_config);
+	APP_ERROR_CHECK(err_code);
+}
+
+//BLUETOOTH CODE
 // Create a timer
-APP_TIMER_DEF(adv_timer);
+//APP_TIMER_DEF(adv_timer);
 
 // BLE configuration
 static simple_ble_config_t ble_config = {
@@ -24,13 +136,6 @@ static simple_ble_config_t ble_config = {
 };
 simple_ble_app_t* simple_ble_app;
 
-// Number of 8bit ints in desired count size
-#define num_cbf 4
-static uint8_t count_buff_len = 4;
-// Buffer to store uint32_t int count in an array of uint8_t
-static uint8_t count_buff[num_cbf];
-// Variable for storing the count
-static uint32_t count;
 
 
 // Sends the specified data over BLE advertisements
@@ -69,7 +174,7 @@ void update_count_buffer(void) {
   count_buff[3] = count & 0xFF;
 }
 
-// Callback when the timer fires. Updates the advertisement data
+/*// Callback when the timer fires. Updates the advertisement data
 void adv_timer_callback(void) {
   // Update advertisement data
   // Increments each value by two each time
@@ -78,32 +183,76 @@ void adv_timer_callback(void) {
   update_count_buffer();
   set_ble_payload(count_buff, count_buff_len);
 }
+*/
 
 // Updates the advertisement payload
 void update_advertisement(void) {
-	count += 1;
   update_count_buffer();
-	set_ble_payload(count_buff, count_buff_len);
+	set_ble_payload(count_buff, num_cbf);
 }
+//BLUETOOTH CODE
 
+int main(void){
+  printf("in main");
+  ret_code_t error_code = NRF_SUCCESS;
 
-int main(void) {
-
-  // Setup BLE
-  // Note: simple BLE is our own library. You can find it in `nrf5x-base/lib/simple_ble/`
+  // initialize RTT library
+  error_code = NRF_LOG_INIT(NULL);
+  APP_ERROR_CHECK(error_code);
+  NRF_LOG_DEFAULT_BACKENDS_INIT();
+  printf("Log initialized\n");
+  
+  //Initialize and config for ble
+  printf("testing");
   simple_ble_app = simple_ble_init(&ble_config);
+  count = 0;
+  printf("successful ble initialization");
+  
+	//This either enables or disables dcdc converter 
+	//nrf_power_dcdcen_set(1);
+  
+  /*
+  while(1) {
+    power_manage();
+  }*/
+  
+	//Call our init function to get our twi instance
+	twi_init();
 
-  update_advertisement();
+	//Not exactly sure why this is necessary yet
+	nrf_delay_ms(500);
 
-  // Set a timer to change the data. Data could also be changed after sensors
-  // are read in real applications
-  //app_timer_init();
-  //app_timer_create(&adv_timer, APP_TIMER_MODE_REPEATED, (app_timer_timeout_handler_t)adv_timer_callback);
-  //app_timer_start(adv_timer, APP_TIMER_TICKS(1000), NULL); // 1000 milliseconds
+	tsl2561_init(&twi_mngr_instance);	
+	tsl2561_power_on(1);
 
-  // go into low power mode
-  //while(1) {
-  //  power_manage();
-  //}
+	const tsl2561_config_t config = {
+		.gain =  1,
+		.int_time = 2,
+		.int_mode = 1, //set to test mode (revert to 1 for proper operation mode)
+		.persist = 1,
+	};
+
+	tsl2561_config(config);
+	
+	tsl2561_write_threshold_upper(100);
+	tsl2561_write_threshold_lower(0);
+	
+	printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
+
+	configure_interrupt(BUCKLER_BUTTON0, interrupt_handler);
+
+	while(1){
+		__WFI();
+		//nrf_drv_gpiote_out_toggle(14);
+		//printf("Lux Value: %i\n", tsl2561_read_lux());
+		//printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
+		//printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
+		//printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
+		//tsl2561_generate_interrupt();
+		//printf("interrupt low\n");
+		//printf("Looping\n");
+		//printf("interrupt high\n");
+		//nrf_delay_ms(1000);
+	}
+
 }
-
