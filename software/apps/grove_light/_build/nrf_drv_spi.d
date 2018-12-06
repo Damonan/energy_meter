@@ -1,11 +1,11 @@
 _build/nrf_drv_spi.o: \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/legacy/nrf_drv_spi.c \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/legacy/nrf_drv_spi.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/nrfx.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/nrfx_config.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/integration/nrfx/legacy/nrf_drv_spi.c \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/integration/nrfx/legacy/nrf_drv_spi.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/nrfx.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/integration/nrfx/nrfx_config.h \
  ../../buckler/software/nrf5x-base//make/config/nrf52840/config/sdk_config.h \
  /home/student/energy_meter/software/buckler/software/boards/buckler_revA/./app_config.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/nrfx_common.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/drivers/nrfx_common.h \
  /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h \
  /usr/arm-none-eabi/include/stdint.h \
  /usr/arm-none-eabi/include/machine/_default_types.h \
@@ -15,32 +15,32 @@ _build/nrf_drv_spi.o: \
  /usr/arm-none-eabi/include/sys/_stdint.h \
  /usr/lib/gcc/arm-none-eabi/7.3.1/include/stddef.h \
  /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cm4.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmInstr.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/cmsis_gcc.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmFunc.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/toolchain/cmsis/include/core_cmSimd.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/system_nrf52840.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_bitfields.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf51_to_nrf52840.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52_to_nrf52840.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf_peripherals.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/nrf52840_peripherals.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/nrfx_glue.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/integration/nrfx/legacy/apply_old_config.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/soc/nrfx_irqs.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/soc/nrfx_irqs_nrf52840.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nrf_assert.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_util.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/compiler_abstraction.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nordic_common.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nordic_common.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_util_platform.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/nrf_assert.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_error.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/nrf.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/nrf52840.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/toolchain/cmsis/include/core_cm4.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/toolchain/cmsis/include/core_cmInstr.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/toolchain/cmsis/include/cmsis_gcc.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/toolchain/cmsis/include/core_cmFunc.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/toolchain/cmsis/include/core_cmSimd.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/system_nrf52840.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/nrf52840_bitfields.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/nrf51_to_nrf52840.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/compiler_abstraction.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/nrf_peripherals.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/nrf52840_peripherals.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/integration/nrfx/nrfx_glue.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/integration/nrfx/legacy/apply_old_config.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/soc/nrfx_irqs.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/soc/nrfx_irqs_nrf52840.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/nrf_assert.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/app_util.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/compiler_abstraction.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/nordic_common.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/nordic_common.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/app_util_platform.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/nrf_assert.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/app_error.h \
  /usr/arm-none-eabi/include/stdio.h /usr/arm-none-eabi/include/_ansi.h \
  /usr/arm-none-eabi/include/newlib.h \
  /usr/arm-none-eabi/include/sys/config.h \
@@ -64,14 +64,14 @@ _build/nrf_drv_spi.o: \
  /usr/arm-none-eabi/include/sys/sched.h \
  /usr/arm-none-eabi/include/machine/types.h \
  /usr/arm-none-eabi/include/sys/stdio.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/sdk_errors.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/drivers_nrf/nrf_soc_nosd/nrf_error.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/app_error_weak.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/soc/nrfx_coredep.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/sdk_errors.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/components/libraries/util/sdk_resources.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/nrfx_errors.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/include/nrfx_spim.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_spim.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/drivers/include/nrfx_spi.h \
- ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/hal/nrf_spi.h
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/sdk_errors.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/drivers_nrf/nrf_soc_nosd/nrf_error.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/app_error_weak.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/soc/nrfx_coredep.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/sdk_errors.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/components/libraries/util/sdk_resources.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/drivers/nrfx_errors.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/drivers/include/nrfx_spim.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/hal/nrf_spim.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/drivers/include/nrfx_spi.h \
+ ../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/hal/nrf_spi.h

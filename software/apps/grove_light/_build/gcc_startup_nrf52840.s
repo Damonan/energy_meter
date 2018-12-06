@@ -1,11 +1,11 @@
-# 1 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/gcc_startup_nrf52840.S"
+# 1 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/gcc_startup_nrf52840.S"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/gcc_startup_nrf52840.S"
-# 23 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/gcc_startup_nrf52840.S"
+# 1 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/gcc_startup_nrf52840.S"
+# 23 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/gcc_startup_nrf52840.S"
     .syntax unified
     .arch armv7e-m
-# 33 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/gcc_startup_nrf52840.S"
+# 33 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/gcc_startup_nrf52840.S"
     .section .stack
 
 
@@ -191,7 +191,7 @@ __isr_vector:
     .globl Reset_Handler
     .type Reset_Handler, %function
 Reset_Handler:
-# 229 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/gcc_startup_nrf52840.S"
+# 229 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/gcc_startup_nrf52840.S"
     ldr r1, =__etext
     ldr r2, =__data_start__
     ldr r3, =__bss_start__
@@ -206,7 +206,7 @@ Reset_Handler:
     bgt .L_loop1
 
 .L_loop1_done:
-# 272 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0/modules/nrfx/mdk/gcc_startup_nrf52840.S"
+# 272 "../../buckler/software/nrf5x-base//sdk/nrf5_sdk_15.0.0_thread/modules/nrfx/mdk/gcc_startup_nrf52840.S"
     bl SystemInit
 
 

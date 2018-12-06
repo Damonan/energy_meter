@@ -47,8 +47,8 @@ void interrupt_handler(){
 	unsigned int lux1_reg = tsl2561_read_lux_code1();
 	double ratio = ((double) abs(lux0_reg - lux0_int)) / ((double) abs(lux1_reg - lux1_int));
 	
-	upper = lux0_reg + 100;
-	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 100;
+	upper = lux0_reg + 50;
+	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 50;
 
 	tsl2561_write_threshold_upper(upper);
 	tsl2561_write_threshold_lower(lower);
@@ -148,6 +148,6 @@ int main(void){
 		//printf("interrupt low\n");
 		//printf("Looping\n");
 		//printf("interrupt high\n");
-		//nrf_delay_ms(1000);
+		//nrf_delay_ms(2000);
 	}
 }
