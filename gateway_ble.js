@@ -1,17 +1,22 @@
 var async = require('async');
 var noble = require('noble');
-var Influx = require('influx');
+var influx = require('influx');
 
 // Address of the NRF-Dev-Board acting as a slave
 var slave_address = 'c0:98:e5:49:00:03';
 
-//connest to host (change http address)
-const influx = new Influx.InfluxDB('http://user:password@host:8086/database');
+
+//change
+var username = 'root'
+var password = 'root'
+var database = 'EnergyUsage'
+//connect to host (change http address)
+var client = new influx({host: 'localhost', username: username, password: password, database: database});
 
 
-influx.getDatabaseNames().then(names=>{
+client.getDatabaseNames().then(names=>{
   if(!names.include('EnergyUsage')){
-    influx.createDatabase('EnergyUsage');
+    client.createDatabase('EnergyUsage');
   }
 });
 
@@ -35,14 +40,7 @@ noble.on('discover', function(peripheral) {
     console.log('count: ', count);
   }
   //TODO Add code to store count data and timestamp in database
-  const start = Date.now()
-  influx.writePoints([
-      {
-        measurement: 'watts', //change this based on main database
-        // tags: { host: os.hostname() },
-        fields: { count }, //change to match main database
-      }
-    ]).catch(err => {
+  client.writePoint(info.series.name, {time: new Date(), value: count}, null, done).catch(err => {
       console.error(`Error saving data to InfluxDB! ${err.stack}`)
     });
      
