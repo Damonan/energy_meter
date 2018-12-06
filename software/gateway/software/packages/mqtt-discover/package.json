@@ -1,0 +1,27 @@
+{
+  "name": "mqtt-discover",
+  "version": "0.1.1",
+  "description": "Find MQTT broker using localhost and mDNS.",
+  "main": "mqtt-discover.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lab11/gateway.git"
+  },
+  "keywords": [
+    "mqtt"
+  ],
+  "author": "Brad Campbell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lab11/gateway/issues"
+  },
+  "homepage": "https://github.com/lab11/gateway#readme",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "mdns": "^2.3.0",
+    "mqtt": "^1.7.0"
+  }
+}

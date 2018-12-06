@@ -1,0 +1,69 @@
+{% extends "base.nunjucks" %}
+
+{% block title %}
+SwarmGateway
+{% endblock %}
+
+{% block body %}
+<h1>SwarmGateway</h1>
+
+<p>
+  Learn more about the SwarmGateway in the <a href="https://github.com/terraswarm/urban-heartbeat-kit">Urban Heartbeat Kit</a>.
+</p>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Devices</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+          {% for device in devices %}
+          <li><a href="device/{{ device.name }}">{{ device.device_type }} ({{ device.device_id }})</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Local Machine Info</h3>
+      </div>
+      <div class="panel-body">
+        <p>Gateway ID: {{ mac_address }}</p>
+        {% for addr_group in ip_addresses %}
+        <p>{{ addr_group.ifname }}:{{ addr_group.index }} - {{ addr_group.address }}</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Statistics</h3>
+      </div>
+      <div class="panel-body">
+        <p>Incoming packets per second: {{ pps }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Triumvi</h3>
+      </div>
+      <div class="panel-body">
+        View <a href="/triumvi">Triumvi</a> meter data.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

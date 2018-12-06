@@ -1,0 +1,7 @@
+*.boot
+*.root
+*.home
+*.bin
+edison-gateway-custom.txt
+flash.log
+

@@ -1,0 +1,13 @@
+[Unit]
+Description=Web interface for gateway
+After=bluetooth.target mosquitto.service
+
+[Service]
+ExecStart=/home/debian/gateway/software/gateway-server/gateway-server.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gateway-server
+
+[Install]
+WantedBy=multi-user.target

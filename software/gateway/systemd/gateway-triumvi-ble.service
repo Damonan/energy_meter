@@ -1,0 +1,14 @@
+[Unit]
+Description=Publish Triumvi packets over BLE.
+Before=ble-gateway-mqtt.service
+After=bluetooth.target mosquitto.service
+
+[Service]
+ExecStart=/home/debian/gateway/software/gateway-triumvi-ble/gateway-triumvi-ble.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gateway-triumvi-ble
+
+[Install]
+WantedBy=multi-user.target

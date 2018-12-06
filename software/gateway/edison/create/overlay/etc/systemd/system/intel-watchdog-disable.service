@@ -1,0 +1,14 @@
+[Unit]
+Description=Disable the Edison watchdog
+After=network.target
+Before=rc-local.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/bin/bash -c 'echo 1 > /sys/devices/virtual/misc/watchdog/disable'
+ExecStop=/bin/bash -c 'echo 0 > /sys/devices/virtual/misc/watchdog/disable'
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

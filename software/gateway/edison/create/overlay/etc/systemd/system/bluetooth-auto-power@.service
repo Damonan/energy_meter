@@ -1,0 +1,11 @@
+[Unit]
+Description=Bluetooth auto power on
+After=bluetooth-patchram.service sys-subsystem-bluetooth-devices-%i.device
+
+[Service]
+ExecStart=/bin/hciconfig %i up
+RestartSec=3
+Restart=on-failure
+
+[Install]
+WantedBy=bluetooth.target

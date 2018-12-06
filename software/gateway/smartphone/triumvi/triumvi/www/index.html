@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+        <title>Triumvi</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        <link rel="stylesheet" href="css/font-awesome.4.3.0.min.css" />
+        <link rel="stylesheet" href="css/jquery.mobile.1.4.5.min.css" />
+        <link rel="stylesheet" href="css/waves.0.7.2.min.css" />
+        <link rel="stylesheet" href="css/nativedroid2.css" />
+
+        <style>
+            /* Prevent FOUC */
+            body { opacity: 0; }
+        </style>
+
+    </head>
+    <body>
+
+        <!-- GATEAWAYS -->
+        <div data-role="page" id="gateways">
+
+
+            <nd2-include data-src="panel-left.html" class="gateways-left-panel"></nd2-include>
+
+            <div data-role="header" data-position="fixed">
+                <a href="#leftpanel" class="ui-btn ui-btn-left"><i class="fa fa-bars"></i></a>
+                <h1>Triumvi Gateways</h1>
+            </div>
+
+            <div role="main" class="ui-content" data-inset="false">
+
+                <ul data-role="listview" data-icon="false" id="gateway-list">
+                    <li data-role="list-divider">
+                        List of Nearby Gateways
+                    </li>
+                </ul>
+
+            </div>
+
+
+
+        </div>
+
+        <!-- SINGLE GATEAWAY -->
+        <div data-role="page" id="gateway">
+
+            <nd2-include data-src="panel-left.html" class="gateways-left-panel"></nd2-include>
+
+            <div data-role="header" data-position="fixed">
+                <a href="#leftpanel" class="ui-btn ui-btn-left"><i class="fa fa-bars"></i></a>
+                <h1>Gateway Details</h1>
+            </div>
+
+            <div role="main" class="ui-content" data-inset="false">
+
+                <h3>Gateway <span class="gateway-id"></span></h3>
+                <div class="box">
+                    <!-- <p>Online: <span class="gateway-online"></span></p>
+                    <p>IP Address: <span class="gateway-ipaddress"></span></p> -->
+                    <p>BLE Connection: <span class="gateway-bleconnected">No</span></p>
+                </div>
+
+                <hr />
+
+                <ul data-role="listview" data-icon="false" id="triumvi-list">
+                    <li data-role="list-divider">
+                        List of Triumvis
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery.2.1.4.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.1.11.4.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/jquery.timeago.1.5.4.js"></script>
+        <script>
+            document.addEventListener("deviceReady", deviceReady, false);
+
+            // hacks to get left panel to show up because it just needs to work
+            // at this point.
+            $(document).on("pagecreate", "#gateways", function (event) {
+                $('#gateways .gateways-left-panel').include({src: 'panel-left.html'})
+            });
+            $(document).on("pagecreate", "#gateway", function (event) {
+                $('#gateway .gateways-left-panel').include({src: 'panel-left.html'})
+            });
+
+            function deviceReady() {
+
+                // Hack this in here to get it to work because i cant stand
+                // this anymore.
+                // nd2-include
+                $.widget("nd2.include", {
+                    options: {
+                        src: null,
+                        post: {}
+                    },
+                    _create: function() {
+                        var el = this.element;
+                        var opts = $.extend(this.options, el.data("options"));
+                        $(document).trigger("createinclude");
+
+                        if (opts.src !== null) {
+                            el.load(opts.src, function() {
+                                el.enhanceWithin();
+
+                                // Apply waves.js
+                                if (typeof Waves !== "undefined") {
+                                    Waves.attach('a', ['waves-button']);
+                                    Waves.attach('button', ['waves-button']);
+                                    Waves.init();
+
+                                    $("body").find(".ui-flipswitch-on").removeClass("waves-effect");
+                                    Waves.attach('.ui-flipswitch', ['waves-button', 'waves-light']);
+
+                                }
+
+                            });
+                        }
+                    },
+                    _update: function() {
+                        console.log("update?");
+                    },
+                    refresh: function() {
+                        return this._update();
+                    }
+                });
+
+                $.getScript('js/jquery.mobile.1.4.5.min.js', function () {
+                    $.getScript('js/waves.0.7.2.min.js', function () {
+                        $.getScript('js/nativedroid2.js', function () {
+                            $.getScript('js/nd2settings.js', function () {
+                                app.ready();
+                            });
+                        });
+                    });
+                });
+            }
+        </script>
+    </body>
+</html>

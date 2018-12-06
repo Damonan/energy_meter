@@ -1,0 +1,17 @@
+[connection]
+id=wired
+uuid=c0ed16a9-6b1d-4fc3-9af7-dbde9fd5c4b8
+type=ethernet
+permissions=
+
+[ethernet]
+mac-address-blacklist=
+
+[ipv4]
+dns-search=
+method=auto
+
+[ipv6]
+addr-gen-mode=stable-privacy
+dns-search=
+method=auto

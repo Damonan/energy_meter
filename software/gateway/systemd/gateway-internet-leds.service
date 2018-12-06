@@ -1,0 +1,13 @@
+[Unit]
+Description=Set tri-color LED based on gateway connectivity.
+After=ble-gateway-mqtt.service
+
+[Service]
+ExecStart=/home/debian/gateway/software/gateway-internet-leds/gateway-internet-leds.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gateway-internet-leds
+
+[Install]
+WantedBy=multi-user.target

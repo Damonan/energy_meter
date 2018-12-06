@@ -1,0 +1,13 @@
+[Unit]
+Description=gateway-ssdp
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /home/debian/gateway/software/gateway-ssdp/gateway-ssdp.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gateway-ssdp
+
+[Install]
+WantedBy=multi-user.target
