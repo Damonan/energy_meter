@@ -8,6 +8,7 @@
 #include "app_util.h"
 #include "simple_ble.h"
 
+
 // Create a timer
 APP_TIMER_DEF(adv_timer);
 

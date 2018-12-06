@@ -1,8 +1,24 @@
 var async = require('async');
 var noble = require('noble');
+var influx = require('influx');
 
 // Address of the NRF-Dev-Board acting as a slave
 var slave_address = 'c0:98:e5:49:00:03';
+
+
+//change
+var username = 'root'
+var password = 'root'
+var database = 'EnergyUsage'
+//connect to host (change http address)
+var client = new influx({host: 'localhost', username: username, password: password, database: database});
+
+
+client.getDatabaseNames().then(names=>{
+  if(!names.include('EnergyUsage')){
+    client.createDatabase('EnergyUsage');
+  }
+});
 
 console.log('Looking for Slave');
 
@@ -24,5 +40,10 @@ noble.on('discover', function(peripheral) {
     console.log('count: ', count);
   }
   //TODO Add code to store count data and timestamp in database
+  client.writePoint(info.series.name, {time: new Date(), value: count}, null, done).catch(err => {
+      console.error(`Error saving data to InfluxDB! ${err.stack}`)
+    });
+     
+
 });
 

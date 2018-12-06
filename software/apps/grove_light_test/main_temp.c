@@ -47,8 +47,8 @@ void interrupt_handler(){
 	unsigned int lux1_reg = tsl2561_read_lux_code1();
 	double ratio = ((double) abs(lux0_reg - lux0_int)) / ((double) abs(lux1_reg - lux1_int));
 	
-	upper = lux0_reg + 50;
-	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 50;
+	upper = lux0_reg + 100;
+	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 100;
 
 	tsl2561_write_threshold_upper(upper);
 	tsl2561_write_threshold_lower(lower);
@@ -99,7 +99,6 @@ void twi_init(void){
 		.scl		= BUCKLER_SENSORS_SCL,
 		.sda		= BUCKLER_SENSORS_SDA,
 		.frequency 	= NRF_TWI_FREQ_400K,
-    .interrupt_priority = 2,
 	};
 	
 	//Initialize the instance and error if it is not initialized properly:
@@ -149,6 +148,6 @@ int main(void){
 		//printf("interrupt low\n");
 		//printf("Looping\n");
 		//printf("interrupt high\n");
-		//nrf_delay_ms(2000);
+		//nrf_delay_ms(1000);
 	}
 }
