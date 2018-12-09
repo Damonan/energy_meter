@@ -141,13 +141,18 @@ noble.on('stateChange', function(state) {
 });
 
 noble.on('discover', function(peripheral) {
-  var advertisement = peripheral.advertisement;
-  var count = advertisment.manufacturerData.readUIntBE(3,4).toString();
+  //var advertisement = peripheral.advertisement;
+  //var count = advertisement.manufacturerData.readUIntBE(3,4).toString();
+  //var t = advertisement.manufacturerData.readUIntBE(7,4).toString();
   if (peripheral.address == slave_address) { 
+    var advertisement = peripheral.advertisement;
+    var count = advertisement.manufacturerData.readUIntBE(3,4).toString();
+    var t = advertisement.manufacturerData.readUIntBE(7,4).toString();
+
     console.log('Received update from slave!');
     console.log('count: ', count);
     var now = new Date().toISOString();
-    var adv_obj = {
+    /*var adv_obj = {
         'device': 'BLEPacket',
         'ble_id': peripheral.id,
         'receive_time': now,
@@ -180,9 +185,19 @@ noble.on('discover', function(peripheral) {
         fields,
         timestamp
       ];
-
+    
       influx_poster.write_data(point);
     }
+    */
+    influx_poster.write_data([
+      {
+        key: 'ble',
+        tags: {},
+        fields: { count_data: count },
+        timestamp: now
+      }
+    ]);
+
   }
   //TODO Add code to store count data and timestamp in database
   // client.writePoint(info.series.name, {time: new Date(), value: count}, null, done).catch(err => {
