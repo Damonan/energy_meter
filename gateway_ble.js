@@ -7,9 +7,9 @@ var slave_address = 'c0:98:e5:49:00:03';
 
 
 //change
-var username = 'root'
-var password = 'root'
-var database = 'EnergyUsage'
+var username = 'eecs149proj'
+var password = 'energy123!'
+var database = 'EnergyUsageBLE'
 //connect to host (change http address)
 var client = new influx({host: 'localhost', username: username, password: password, database: database});
 
