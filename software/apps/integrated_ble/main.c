@@ -9,6 +9,7 @@
 #include "nordic_common.h"
 #include "app_timer.h"
 #include "nrf_drv_clock.h"
+#include "nrfx_rtc.h"
 #include "nrf_power.h"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -31,8 +32,8 @@ unsigned int lower;
 //Global Count
 static uint32_t count;
 
-#define num_cbf 4
-static uint8_t count_buff_len = 4;
+#define num_cbf 8
+static uint8_t count_buff_len = 8;
 // Buffer to store uint32_t int count in an array of uint8_t
 static uint8_t count_buff[num_cbf];
 // Variable for storing the count
@@ -42,13 +43,41 @@ static uint8_t count_buff[num_cbf];
 //Param 1: instance name; Param 2: queue size; Param 3: index
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
+// RTC0 is used by SoftDevice, RTC1 is used by app_timer
+const nrfx_rtc_t rtc_instance = NRFX_RTC_INSTANCE(2);
+
+// Interrupt handler; currently not used not sure if needed
+static void rtc_handler(nrfx_rtc_int_type_t int_type) {}
+
+// Convert RTC ticks to milliseconds
+uint32_t rtc_to_s(uint32_t ticks) {
+  return ticks / 1000;
+}
+
+/*uint32_t app_get_current_time() {
+
+    uint32_t time = app.config.app_sync_time + (rtc_to_s(nrfx_rtc_counter_get(&rtc_instance)) - app.config.app_sync_rtc_counter);
+
+    //printf("Epoch time: %li; RTC counter: %li; Current time: %li; Result: %li\n", app.config.app_sync_time, app.config.app_sync_rtc_counter, rtc_to_s(nrfx_rtc_counter_get(&rtc_instance)), time);
+
+    if (time < app.config.app_sync_time) {
+        printf("WARNING: RTC overflow has occurred\n");
+        app.config.app_sync_time += rtc_to_s(0xFFFFFFFF);
+        time                     += rtc_to_s(0xFFFFFFFF);
+    }
+
+    return time
+}
+*/
+
 //This function will be called when the tsl2561 is interrupted
 //For now, read the lux, update the thresholds accordingly and clear the interrupt.
 //TODO: Send out packets to the gateway
 void interrupt_handler(){
 	nrf_drv_gpiote_out_toggle(14);
-	//printf("INTERRUPT HAPPENED!");
-	//printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
+	printf("INTERRUPT HAPPENED!");
+
+	printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
 	//printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
 	unsigned int lux0_int = tsl2561_read_lux_code0();
 	unsigned int lux1_int = tsl2561_read_lux_code1();
@@ -172,6 +201,11 @@ void update_count_buffer(void) {
   count_buff[1] = (count >> 16) & 0xFF;
   count_buff[2] = (count >> 8) & 0xFF;
   count_buff[3] = count & 0xFF;
+  uint32_t t = nrfx_rtc_counter_get(&rtc_instance);
+  count_buff[4] = (t >> 24) & 0xFF;
+  count_buff[5] = (t >> 16) & 0xFF;
+  count_buff[6] = (t >> 8) & 0xFF;
+  count_buff[7] = t & 0xFF;
 }
 
 /*// Callback when the timer fires. Updates the advertisement data
@@ -192,21 +226,47 @@ void update_advertisement(void) {
 }
 //BLUETOOTH CODE
 
+// Function starting the internal LFCLK XTAL oscillator
+static void lfclk_config(void) {
+   ret_code_t err_code = nrf_drv_clock_init();
+   APP_ERROR_CHECK(err_code);
+   nrf_drv_clock_lfclk_request(NULL);
+}
+
+static void rtc_init(void) {
+  //lfclk_config();
+  nrfx_rtc_config_t rtc_config = NRFX_RTC_DEFAULT_CONFIG;
+  rtc_config.prescaler = 32;
+  ret_code_t err_code = nrfx_rtc_init( &rtc_instance, &rtc_config, rtc_handler);
+  APP_ERROR_CHECK(err_code);
+
+  nrfx_rtc_tick_enable(&rtc_instance,true);
+
+  nrfx_rtc_enable(&rtc_instance);
+}
+
+
+
 int main(void){
   printf("in main");
   ret_code_t error_code = NRF_SUCCESS;
+  
+  //This either enables or diables dcdc converter
+  //nrf_power_dcdcen_set(1);
 
   // initialize RTT library
   error_code = NRF_LOG_INIT(NULL);
   APP_ERROR_CHECK(error_code);
   NRF_LOG_DEFAULT_BACKENDS_INIT();
   printf("Log initialized\n");
-  
+
+  rtc_init();
+  printf("time2: %i\n", rtc_to_s(nrfx_rtc_counter_get(&rtc_instance)));
   //Initialize and config for ble
-  printf("testing");
+  printf("testing\n");
   simple_ble_app = simple_ble_init(&ble_config);
   count = 0;
-  printf("successful ble initialization");
+  printf("successful ble initialization\n");
   
 	//This either enables or disables dcdc converter 
 	//nrf_power_dcdcen_set(1);
