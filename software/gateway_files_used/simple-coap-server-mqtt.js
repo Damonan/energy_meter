@@ -24,7 +24,7 @@ mqtt_client.on('connect', function () {
       try {
         console.log('got request')
         var url = req.url;
-        if (url === "/test") {
+        if (url === "/data") {
           console.log("got data: " + req.payload);
           ////Timestamp will need more parsing
           ////var sent_time = req.payload.slice(0, 4); // will need to uncomment
@@ -34,7 +34,7 @@ mqtt_client.on('connect', function () {
             prev_data = data;
             var received_time = new Date();  
             var adv_obj = {
-              count: data,
+              count: data * 2,
 
             };
             adv_obj._meta = {

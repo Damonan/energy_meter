@@ -268,7 +268,7 @@ void send_timer_callback() {
   //uint32_t data = 0;
   //const uint8_t* data = (uint8_t*)"hello";
   otInstance* thread_instance = thread_get_instance();
-  thread_coap_send(thread_instance, OT_COAP_CODE_PUT, OT_COAP_TYPE_NON_CONFIRMABLE, &m_peer_address, "test", adv_buffer, num_cbf);
+  thread_coap_send(thread_instance, OT_COAP_CODE_PUT, OT_COAP_TYPE_NON_CONFIRMABLE, &m_peer_address, "data", adv_buffer, num_cbf);
   NRF_LOG_INFO("Sent test message!");
 }
 
@@ -354,10 +354,11 @@ int main(void) {
 
     app_timer_init();
     app_timer_create(&coap_send_timer, APP_TIMER_MODE_REPEATED, send_timer_callback);
-    app_timer_start(coap_send_timer, APP_TIMER_TICKS(100), NULL);
+    app_timer_start(coap_send_timer, APP_TIMER_TICKS(1000), NULL);
 
     // Enter main loop.
     while (1) {
+        //power_manage();
         __WFI();
         thread_process(); //TODO: comment this and below lines out if possible
         if (NRF_LOG_PROCESS() == false) // the main point of this is power consumption I think, it contains __WFE, so that might conflict with WFI
