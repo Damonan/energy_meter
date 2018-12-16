@@ -21,6 +21,7 @@
 
 #include "../../libraries/grove_light/tsl2561.h"
 
+
 //Variables to maintain thresholds
 bool update_thresh = false;
 unsigned int upper;
@@ -139,6 +140,7 @@ int main(void){
 	configure_interrupt(BUCKLER_BUTTON0, interrupt_handler);
 
 	while(1){
+    
 		__WFI();
 		//nrf_drv_gpiote_out_toggle(14);
 		//printf("Lux Value: %i\n", tsl2561_read_lux());

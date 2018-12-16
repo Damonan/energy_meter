@@ -75,26 +75,31 @@ uint32_t rtc_to_s(uint32_t ticks) {
 //TODO: Send out packets to the gateway
 void interrupt_handler(){
 	nrf_drv_gpiote_out_toggle(14);
-	printf("INTERRUPT HAPPENED!");
+  printf("INTERRUPT HAPPENED!\n");
 
-	printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
+	//printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
 	//printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
 	unsigned int lux0_int = tsl2561_read_lux_code0();
 	unsigned int lux1_int = tsl2561_read_lux_code1();
-	nrf_delay_ms(1500);
+	nrf_delay_ms(750);
 	unsigned int lux0_reg = tsl2561_read_lux_code0();
 	unsigned int lux1_reg = tsl2561_read_lux_code1();
 	double ratio = ((double) abs(lux0_reg - lux0_int)) / ((double) abs(lux1_reg - lux1_int));
-	
-	upper = lux0_reg + 100;
-	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 100;
+  printf("Ratio: %f\n", ratio);	
+	upper = lux0_reg + 200;
+	lower = (lux0_reg <= 5) ? 0 : lux0_reg - 200;
+
+  printf("upper:%i\n", upper);
+  printf("lower: %i\n", lower);
+  printf("lux0_int: %i\n", lux0_int);
+  printf("lux1_int: %i\n", lux1_int);
 
 	tsl2561_write_threshold_upper(upper);
 	tsl2561_write_threshold_lower(lower);
 	
 	tsl2561_clear_interrupt();
 	
-	if (ratio <= 2) {
+	if (ratio <= 1.5) {
 		//printf("FALSE POSITIVE!\n");
 		count++;
     update_advertisement();
@@ -252,7 +257,7 @@ int main(void){
   ret_code_t error_code = NRF_SUCCESS;
   
   //This either enables or diables dcdc converter
-  //nrf_power_dcdcen_set(1);
+  nrf_power_dcdcen_set(1);
 
   // initialize RTT library
   error_code = NRF_LOG_INIT(NULL);
@@ -297,22 +302,23 @@ int main(void){
 	tsl2561_write_threshold_upper(100);
 	tsl2561_write_threshold_lower(0);
 	
-	printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
+	//printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
 
 	configure_interrupt(BUCKLER_BUTTON0, interrupt_handler);
 
 	while(1){
-		__WFI();
+    power_manage();
+		//__WFI();
 		//nrf_drv_gpiote_out_toggle(14);
 		//printf("Lux Value: %i\n", tsl2561_read_lux());
-		//printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
-		//printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
+		printf("Lux Code 0: %i\n", tsl2561_read_lux_code0());
+		printf("Lux Code 1: %i\n", tsl2561_read_lux_code1());
 		//printf("Threshold lower: %i, Threshold Upper: %i\n", tsl2561_read_threshold_lower(), tsl2561_read_threshold_upper());
 		//tsl2561_generate_interrupt();
 		//printf("interrupt low\n");
 		//printf("Looping\n");
 		//printf("interrupt high\n");
-		//nrf_delay_ms(1000);
+		nrf_delay_ms(1000);
 	}
 
 }
