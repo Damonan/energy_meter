@@ -17,7 +17,7 @@ var TOPIC_OCCUPANCY_STREAM = 'occupancy/+';
 
 // How long to batch data for before posting
 var DATA_LIMIT_LINES = 0; //200000;
-var DATA_LIMIT_TIME  = 15*1000;
+var DATA_LIMIT_TIME  = 1*1000;
 
 // Default config file path
 var config_file = '/etc/swarm-gateway/influxdb.conf';

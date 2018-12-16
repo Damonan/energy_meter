@@ -51,6 +51,7 @@ static void log_init(void)
 
 
 void send_timer_callback() {
+  //uint32_t data = 0;
   const uint8_t* data = (uint8_t*)"hello";
   otInstance* thread_instance = thread_get_instance();
   thread_coap_send(thread_instance, OT_COAP_CODE_PUT, OT_COAP_TYPE_NON_CONFIRMABLE, &m_peer_address, "test", data, strnlen((char*)data, 6));
